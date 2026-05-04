@@ -73,6 +73,8 @@
   top: 90px;
 }
 
+.mapa-wrap { display: block; margin-bottom: 1.5rem; }
+
 @media (max-width: 960px) {
   .app-main { grid-template-columns: 1fr; padding: 1rem; }
   .sidebar { position: static; }

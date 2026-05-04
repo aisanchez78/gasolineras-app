@@ -14,7 +14,17 @@
       <app-buscador (posicionDetectada)="onPosicion($event)" />
       <app-filtros (filtrosChanged)="onFiltros($event)" />
     </aside>
+
     <div class="contenido">
+      @if (busquedaRealizada && gasolinerasFiltradas.length > 0) {
+        <app-mapa
+          [gasolineras]="gasolinerasFiltradas"
+          [posicion]="posicion"
+          [filtros]="filtros"
+          class="mapa-wrap">
+        </app-mapa>
+      }
+
       <app-resultados
         [gasolineras]="gasolinerasFiltradas"
         [filtros]="filtros"
