@@ -1,0 +1,8 @@
+{
+  "/api-gasolineras": {
+    "target": "https://sedeaplicaciones.minetur.gob.es",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": { "^/api-gasolineras": "" }
+  }
+}

@@ -1,0 +1,77 @@
+<section class="buscador-card">
+
+  <div class="buscador-hero">
+    <span class="buscador-icon">⛽</span>
+    <div>
+      <h2 class="buscador-titulo">¿Dónde buscamos?</h2>
+      <p class="buscador-subtitulo">Introduce tu ubicación para encontrar las gasolineras más baratas cerca de ti</p>
+    </div>
+  </div>
+
+  <!-- Búsqueda rápida por código postal -->
+  <div class="seccion">
+    <p class="seccion-label">Código postal <span class="seccion-badge">Más rápido</span></p>
+    <div class="cp-row">
+      <input
+        class="cp-input"
+        type="text"
+        [(ngModel)]="codigoPostal"
+        placeholder="ej. 30001"
+        maxlength="5"
+        (keyup.enter)="buscarPorCP()"
+        [disabled]="cargando" />
+      <button class="btn-cp" (click)="buscarPorCP()" [disabled]="cargando || codigoPostal.length < 5">
+        {{ cargando ? '...' : 'Buscar' }}
+      </button>
+    </div>
+  </div>
+
+  <div class="separador"><span>o busca por dirección</span></div>
+
+  <!-- Búsqueda por dirección -->
+  <div class="seccion">
+    <p class="seccion-label">Ciudad o dirección</p>
+    <div class="search-wrap">
+      <input
+        class="search-input"
+        type="text"
+        [(ngModel)]="textoBusqueda"
+        placeholder="ej. Murcia · Gran Vía Madrid · Sevilla"
+        (keyup.enter)="buscarPorDireccion()"
+        [disabled]="cargando" />
+      <button class="search-btn" (click)="buscarPorDireccion()" [disabled]="cargando">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="separador"><span>o usa el GPS</span></div>
+
+  <!-- GPS -->
+  <button class="btn-gps" (click)="usarGPS()" [disabled]="cargando">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <circle cx="12" cy="12" r="3"/>
+      <line x1="12" y1="2" x2="12" y2="6"/>
+      <line x1="12" y1="18" x2="12" y2="22"/>
+      <line x1="2" y1="12" x2="6" y2="12"/>
+      <line x1="18" y1="12" x2="22" y2="12"/>
+    </svg>
+    {{ cargando ? 'Detectando ubicación...' : 'Usar mi ubicación actual' }}
+  </button>
+
+  @if (error) {
+    <p class="error-msg">⚠ {{ error }}</p>
+  }
+
+  @if (nombreLugar) {
+    <div class="lugar-encontrado">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+      </svg>
+      <span>{{ nombreLugar }}</span>
+    </div>
+  }
+
+</section>

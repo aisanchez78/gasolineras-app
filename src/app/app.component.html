@@ -1,0 +1,28 @@
+<div class="app-shell">
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="logo">⛽</div>
+      <div>
+        <h1 class="app-title">GasolinApp</h1>
+        <p class="app-tagline">Encuentra el carburante más barato cerca de ti</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <aside class="sidebar">
+      <app-buscador (posicionDetectada)="onPosicion($event)" />
+      <app-filtros (filtrosChanged)="onFiltros($event)" />
+    </aside>
+    <div class="contenido">
+      <app-resultados
+        [gasolineras]="gasolinerasFiltradas"
+        [filtros]="filtros"
+        [orden]="orden"
+        [cargando]="cargando"
+        [busquedaRealizada]="busquedaRealizada"
+        (ordenChanged)="onOrden($event)">
+      </app-resultados>
+    </div>
+  </main>
+</div>
