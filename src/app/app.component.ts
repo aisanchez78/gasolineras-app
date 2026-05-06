@@ -6,7 +6,7 @@ import { ResultadosComponent } from './components/resultados/resultados.componen
 import { MapaComponent } from './components/mapa/mapa.component';
 import { ComparadorComponent } from './components/comparador/comparador.component';
 import { GasolineraService } from './services/gasolinera.service';
-import { Gasolinera, FiltrosActivos, Coordenadas, OrdenResultados } from './models/gasolinera.model';
+import { Gasolinera, ActiveFilters, Coordinates, SortOrder } from './models/gasolinera.model';
 
 @Component({
   selector: 'app-root',
@@ -19,16 +19,16 @@ export class AppComponent {
   private svc = inject(GasolineraService);
   private cdr = inject(ChangeDetectorRef);
 
-  posicion: Coordenadas | null = null;
-  filtros: FiltrosActivos = { carburante: 'gasolina95', radioKm: 10, marcas: [] };
-  orden: OrdenResultados = 'precio';
-  todasGasolineras: Gasolinera[] = [];
-  candidatosEnriquecidos: Gasolinera[] = [];
-  gasolinerasFiltradas: Gasolinera[] = [];
-  cargando = false;
-  busquedaRealizada = false;
-  seleccionadas: Gasolinera[] = [];
-  gasolineraParaRuta: Gasolinera | null = null;
+  userLocation: Coordinates | null = null;
+  filters: ActiveFilters = { fuelType: 'gasolina95', radiusKm: 10, brands: [] };
+  order: SortOrder = 'price';
+  allStations: Gasolinera[] = [];
+  enrichedCandidates: Gasolinera[] = [];
+  filteredStations: Gasolinera[] = [];
+  loading = false;
+  hasSearched = false;
+  comparisonSelection: Gasolinera[] = [];
+  routeTarget: Gasolinera | null = null;
   mobileTab: 'list' | 'map' = 'list';
   theme: 'dark' | 'light' = 'dark';
 
@@ -38,68 +38,68 @@ export class AppComponent {
     this.cdr.detectChanges();
   }
 
-  onPosicion(pos: Coordenadas) { this.posicion = pos; this.buscar(); }
+  onLocationDetected(pos: Coordinates) { this.userLocation = pos; this.search(); }
 
-  onFiltros(f: FiltrosActivos) { this.filtros = f; if (this.posicion) this.aplicarFiltros(); }
+  onFiltersChanged(f: ActiveFilters) { this.filters = f; if (this.userLocation) this.applyFilters(); }
 
-  onSeleccionarRuta(g: Gasolinera) {
-    this.gasolineraParaRuta = this.gasolineraParaRuta?.IDEESS === g.IDEESS ? null : g;
+  onRouteSelected(g: Gasolinera) {
+    this.routeTarget = this.routeTarget?.IDEESS === g.IDEESS ? null : g;
     this.cdr.detectChanges();
   }
 
-  onOrden(o: OrdenResultados) {
-    this.orden = o;
-    if (this.candidatosEnriquecidos.length > 0) {
-      this.gasolinerasFiltradas = this.svc.ordenarYLimitar(this.candidatosEnriquecidos, this.orden, this.filtros.carburante);
+  onOrderChanged(o: SortOrder) {
+    this.order = o;
+    if (this.enrichedCandidates.length > 0) {
+      this.filteredStations = this.svc.sortAndLimit(this.enrichedCandidates, this.order, this.filters.fuelType);
       this.cdr.detectChanges();
     }
   }
 
-  private buscar() {
-    if (!this.posicion) return;
-    this.cargando = true;
+  private search() {
+    if (!this.userLocation) return;
+    this.loading = true;
     this.cdr.detectChanges();
 
-    if (this.todasGasolineras.length > 0) { this.aplicarFiltros(); return; }
+    if (this.allStations.length > 0) { this.applyFilters(); return; }
 
-    this.svc.obtenerTodasEstaciones().subscribe({
-      next: data => { this.todasGasolineras = data; this.aplicarFiltros(); },
-      error: () => { this.cargando = false; this.busquedaRealizada = true; this.cdr.detectChanges(); },
+    this.svc.fetchAllStations().subscribe({
+      next: data => { this.allStations = data; this.applyFilters(); },
+      error: () => { this.loading = false; this.hasSearched = true; this.cdr.detectChanges(); },
     });
   }
 
-  onToggleComparacion(g: Gasolinera) {
-    const idx = this.seleccionadas.findIndex(s => s.IDEESS === g.IDEESS);
+  onToggleComparison(g: Gasolinera) {
+    const idx = this.comparisonSelection.findIndex(s => s.IDEESS === g.IDEESS);
     if (idx >= 0) {
-      this.seleccionadas = this.seleccionadas.filter((_, i) => i !== idx);
-    } else if (this.seleccionadas.length < 3) {
-      this.seleccionadas = [...this.seleccionadas, g];
+      this.comparisonSelection = this.comparisonSelection.filter((_, i) => i !== idx);
+    } else if (this.comparisonSelection.length < 3) {
+      this.comparisonSelection = [...this.comparisonSelection, g];
     }
     this.cdr.detectChanges();
   }
 
-  onRemoverDeComparacion(g: Gasolinera) {
-    this.seleccionadas = this.seleccionadas.filter(s => s.IDEESS !== g.IDEESS);
+  onRemoveFromComparison(g: Gasolinera) {
+    this.comparisonSelection = this.comparisonSelection.filter(s => s.IDEESS !== g.IDEESS);
     this.cdr.detectChanges();
   }
 
-  onLimpiarComparacion() {
-    this.seleccionadas = [];
+  onClearComparison() {
+    this.comparisonSelection = [];
     this.cdr.detectChanges();
   }
 
-  private aplicarFiltros() {
-    if (!this.posicion) return;
-    const candidatos = this.svc.filtrarCandidatos(this.todasGasolineras, this.posicion, this.filtros);
-    this.svc.enriquecerConDistanciasReales(candidatos, this.posicion).subscribe({
-      next: enriquecidos => {
-        this.candidatosEnriquecidos = enriquecidos;
-        this.gasolinerasFiltradas   = this.svc.ordenarYLimitar(enriquecidos, this.orden, this.filtros.carburante);
-        this.cargando               = false;
-        this.busquedaRealizada      = true;
+  private applyFilters() {
+    if (!this.userLocation) return;
+    const candidates = this.svc.filterCandidates(this.allStations, this.userLocation, this.filters);
+    this.svc.enrichWithRealDistances(candidates, this.userLocation).subscribe({
+      next: enriched => {
+        this.enrichedCandidates = enriched;
+        this.filteredStations   = this.svc.sortAndLimit(enriched, this.order, this.filters.fuelType);
+        this.loading            = false;
+        this.hasSearched        = true;
         this.cdr.detectChanges();
       },
-      error: () => { this.cargando = false; this.busquedaRealizada = true; this.cdr.detectChanges(); },
+      error: () => { this.loading = false; this.hasSearched = true; this.cdr.detectChanges(); },
     });
   }
 }

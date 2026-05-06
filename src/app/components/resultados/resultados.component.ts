@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TarjetaGasolineraComponent } from '../tarjeta-gasolinera/tarjeta-gasolinera.component';
-import { Gasolinera, FiltrosActivos, OrdenResultados } from '../../models/gasolinera.model';
+import { Gasolinera, ActiveFilters, SortOrder } from '../../models/gasolinera.model';
 
 @Component({
   selector: 'app-resultados',
@@ -11,27 +11,27 @@ import { Gasolinera, FiltrosActivos, OrdenResultados } from '../../models/gasoli
   styleUrl: './resultados.component.scss'
 })
 export class ResultadosComponent {
-  @Input() gasolineras: Gasolinera[] = [];
-  @Input() filtros!: FiltrosActivos;
-  @Input() orden: OrdenResultados = 'precio';
-  @Input() cargando = false;
-  @Input() busquedaRealizada = false;
-  @Input() seleccionadas: Gasolinera[] = [];
-  @Output() ordenChanged = new EventEmitter<OrdenResultados>();
-  @Output() toggleComparacion = new EventEmitter<Gasolinera>();
-  @Output() seleccionarRuta = new EventEmitter<Gasolinera>();
+  @Input() stations: Gasolinera[] = [];
+  @Input() filters!: ActiveFilters;
+  @Input() order: SortOrder = 'price';
+  @Input() loading = false;
+  @Input() hasSearched = false;
+  @Input() comparisonSelection: Gasolinera[] = [];
+  @Output() orderChanged = new EventEmitter<SortOrder>();
+  @Output() toggleComparison = new EventEmitter<Gasolinera>();
+  @Output() routeSelected = new EventEmitter<Gasolinera>();
 
-  opciones: { valor: OrdenResultados; etiqueta: string; icono: string }[] = [
-    { valor: 'precio',    etiqueta: 'Precio',    icono: '💰' },
-    { valor: 'distancia', etiqueta: 'Distancia', icono: '📍' },
-    { valor: 'nombre',    etiqueta: 'Nombre',    icono: '🔤' },
+  opciones: { value: SortOrder; label: string; icon: string }[] = [
+    { value: 'price',    label: 'Precio',    icon: '💰' },
+    { value: 'distance', label: 'Distancia', icon: '📍' },
+    { value: 'name',     label: 'Nombre',    icon: '🔤' },
   ];
 
-  estaSeleccionada(g: Gasolinera): boolean {
-    return this.seleccionadas.some(s => s.IDEESS === g.IDEESS);
+  isSelected(g: Gasolinera): boolean {
+    return this.comparisonSelection.some(s => s.IDEESS === g.IDEESS);
   }
 
-  get comparacionLlena(): boolean {
-    return this.seleccionadas.length >= 3;
+  get isComparisonFull(): boolean {
+    return this.comparisonSelection.length >= 3;
   }
 }

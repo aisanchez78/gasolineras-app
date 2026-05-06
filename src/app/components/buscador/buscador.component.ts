@@ -2,7 +2,7 @@ import { Component, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GeoService } from '../../services/geo.service';
-import { Coordenadas } from '../../models/gasolinera.model';
+import { Coordinates } from '../../models/gasolinera.model';
 
 @Component({
   selector: 'app-buscador',
@@ -12,44 +12,44 @@ import { Coordenadas } from '../../models/gasolinera.model';
   styleUrl: './buscador.component.scss'
 })
 export class BuscadorComponent {
-  @Output() posicionDetectada = new EventEmitter<Coordenadas>();
+  @Output() locationDetected = new EventEmitter<Coordinates>();
 
   private geo = inject(GeoService);
 
-  textoBusqueda = '';
-  codigoPostal = '';
-  nombreLugar = '';
-  cargando = false;
+  searchText = '';
+  postalCode = '';
+  locationName = '';
+  loading = false;
   error = '';
 
-  buscarPorCP() {
-    if (this.codigoPostal.length < 5) return;
-    this.iniciarBusqueda();
-    this.geo.buscarDireccion(this.codigoPostal + ', España').subscribe({
-      next: r => this.onExito(r),
+  searchByPostalCode() {
+    if (this.postalCode.length < 5) return;
+    this.startSearch();
+    this.geo.geocodeAddress(this.postalCode + ', España').subscribe({
+      next: r => this.onSuccess(r),
       error: () => this.onError('No se encontró ese código postal.')
     });
   }
 
-  buscarPorDireccion() {
-    if (!this.textoBusqueda.trim()) {
+  searchByAddress() {
+    if (!this.searchText.trim()) {
       this.error = 'Escribe una dirección o ciudad.';
       return;
     }
-    this.iniciarBusqueda();
-    this.geo.buscarDireccion(this.textoBusqueda).subscribe({
-      next: r => this.onExito(r),
+    this.startSearch();
+    this.geo.geocodeAddress(this.searchText).subscribe({
+      next: r => this.onSuccess(r),
       error: () => this.onError('No se encontró esa dirección. Intenta con otro término.')
     });
   }
 
-  usarGPS() {
-    this.iniciarBusqueda();
+  useGps() {
+    this.startSearch();
     this.geo.obtenerPosicion().subscribe({
       next: pos => {
-        this.cargando = false;
-        this.nombreLugar = `Tu ubicación (${pos.lat.toFixed(4)}, ${pos.lng.toFixed(4)})`;
-        this.posicionDetectada.emit(pos);
+        this.loading = false;
+        this.locationName = `Tu ubicación (${pos.lat.toFixed(4)}, ${pos.lng.toFixed(4)})`;
+        this.locationDetected.emit(pos);
       },
       error: (err) => {
         switch (err?.code) {
@@ -62,20 +62,20 @@ export class BuscadorComponent {
     });
   }
 
-  private iniciarBusqueda() {
-    this.cargando = true;
+  private startSearch() {
+    this.loading = true;
     this.error = '';
-    this.nombreLugar = '';
+    this.locationName = '';
   }
 
-  private onExito(r: { lat: number; lng: number; nombreLugar: string }) {
-    this.cargando = false;
-    this.nombreLugar = r.nombreLugar;
-    this.posicionDetectada.emit({ lat: r.lat, lng: r.lng });
+  private onSuccess(r: { lat: number; lng: number; locationName: string }) {
+    this.loading = false;
+    this.locationName = r.locationName;
+    this.locationDetected.emit({ lat: r.lat, lng: r.lng });
   }
 
   private onError(msg: string) {
-    this.cargando = false;
+    this.loading = false;
     this.error = msg;
   }
 }

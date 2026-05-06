@@ -1,14 +1,14 @@
 import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Gasolinera, FiltrosActivos } from '../../models/gasolinera.model';
+import { Gasolinera, ActiveFilters } from '../../models/gasolinera.model';
 
-type CampoPrecio = 'Precio Gasolina 95 E5' | 'Precio Gasoleo A' | 'Precio Gasolina 98 E5' | 'Precio Gasoil Premium';
+type PriceField = 'Precio Gasolina 95 E5' | 'Precio Gasoleo A' | 'Precio Gasolina 98 E5' | 'Precio Gasoil Premium';
 
-const FILAS: { label: string; campo: CampoPrecio }[] = [
-  { label: 'G95',       campo: 'Precio Gasolina 95 E5' },
-  { label: 'Gasóleo A', campo: 'Precio Gasoleo A' },
-  { label: 'G98',       campo: 'Precio Gasolina 98 E5' },
-  { label: 'Gasoil P.', campo: 'Precio Gasoil Premium' },
+const ROWS: { label: string; field: PriceField }[] = [
+  { label: 'G95',       field: 'Precio Gasolina 95 E5' },
+  { label: 'Gasóleo A', field: 'Precio Gasoleo A' },
+  { label: 'G98',       field: 'Precio Gasolina 98 E5' },
+  { label: 'Gasoil P.', field: 'Precio Gasoil Premium' },
 ];
 
 @Component({
@@ -19,45 +19,45 @@ const FILAS: { label: string; campo: CampoPrecio }[] = [
   styleUrl: './comparador.component.scss',
 })
 export class ComparadorComponent implements OnChanges {
-  @Input() seleccionadas: Gasolinera[] = [];
-  @Input() filtros!: FiltrosActivos;
-  @Output() remover = new EventEmitter<Gasolinera>();
-  @Output() limpiar = new EventEmitter<void>();
+  @Input() comparisonSelection: Gasolinera[] = [];
+  @Input() filters!: ActiveFilters;
+  @Output() remove = new EventEmitter<Gasolinera>();
+  @Output() clear = new EventEmitter<void>();
 
-  panelAbierto = false;
-  readonly filas = FILAS;
+  panelOpen = false;
+  readonly rows = ROWS;
 
   ngOnChanges() {
-    if (this.seleccionadas.length === 0) this.panelAbierto = false;
+    if (this.comparisonSelection.length === 0) this.panelOpen = false;
   }
 
-  togglePanel() { this.panelAbierto = !this.panelAbierto; }
+  togglePanel() { this.panelOpen = !this.panelOpen; }
 
-  precio(g: Gasolinera, campo: CampoPrecio): string {
-    return (g[campo] as string)?.trim() || '—';
+  getPrice(g: Gasolinera, field: PriceField): string {
+    return (g[field] as string)?.trim() || '—';
   }
 
-  private parsear(s: string): number {
+  private parse(s: string): number {
     if (!s || s.trim() === '' || s === '—') return Infinity;
     return parseFloat(s.replace(',', '.'));
   }
 
-  esMejorPrecio(g: Gasolinera, campo: CampoPrecio): boolean {
-    const val = this.parsear(g[campo] as string);
+  isBestPrice(g: Gasolinera, field: PriceField): boolean {
+    const val = this.parse(g[field] as string);
     if (val === Infinity) return false;
-    const min = Math.min(...this.seleccionadas.map(s => this.parsear(s[campo] as string)));
+    const min = Math.min(...this.comparisonSelection.map(s => this.parse(s[field] as string)));
     return val === min;
   }
 
-  esMejorDistancia(g: Gasolinera): boolean {
-    const min = Math.min(...this.seleccionadas.map(s => s.distancia ?? Infinity));
-    return (g.distancia ?? Infinity) === min;
+  isBestDistance(g: Gasolinera): boolean {
+    const min = Math.min(...this.comparisonSelection.map(s => s.distance ?? Infinity));
+    return (g.distance ?? Infinity) === min;
   }
 
-  labelCarburante(): string {
+  fuelLabel(): string {
     const map: Record<string, string> = {
       gasolina95: 'G95', gasoil: 'Gasóleo A', gasolina98: 'G98', gasoilPremium: 'Gasoil P.',
     };
-    return map[this.filtros?.carburante] ?? '';
+    return map[this.filters?.fuelType] ?? '';
   }
 }
