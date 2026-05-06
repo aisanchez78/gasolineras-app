@@ -21,6 +21,7 @@
           [gasolineras]="gasolinerasFiltradas"
           [posicion]="posicion"
           [filtros]="filtros"
+          [gasolineraSeleccionada]="gasolineraParaRuta"
           class="mapa-wrap">
         </app-mapa>
       }
@@ -31,7 +32,8 @@
         [orden]="orden"
         [cargando]="cargando"
         [busquedaRealizada]="busquedaRealizada"
-        (ordenChanged)="onOrden($event)">
+        (ordenChanged)="onOrden($event)"
+        (seleccionarRuta)="onSeleccionarRuta($event)">
       </app-resultados>
     </div>
   </main>

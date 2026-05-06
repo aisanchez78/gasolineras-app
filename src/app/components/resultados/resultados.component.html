@@ -37,7 +37,8 @@
         <app-tarjeta-gasolinera
           [gasolinera]="g"
           [filtros]="filtros"
-          [esMasBarata]="orden === 'precio' && i === 0">
+          [esMasBarata]="orden === 'precio' && i === 0"
+          (seleccionarRuta)="seleccionarRuta.emit(g)">
         </app-tarjeta-gasolinera>
       }
     </div>

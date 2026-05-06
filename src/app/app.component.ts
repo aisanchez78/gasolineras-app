@@ -26,10 +26,16 @@ export class AppComponent {
   gasolinerasFiltradas: Gasolinera[] = [];
   cargando = false;
   busquedaRealizada = false;
+  gasolineraParaRuta: Gasolinera | null = null;
 
   onPosicion(pos: Coordenadas) { this.posicion = pos; this.buscar(); }
 
   onFiltros(f: FiltrosActivos) { this.filtros = f; if (this.posicion) this.aplicarFiltros(); }
+
+  onSeleccionarRuta(g: Gasolinera) {
+    this.gasolineraParaRuta = this.gasolineraParaRuta?.IDEESS === g.IDEESS ? null : g;
+    this.cdr.detectChanges();
+  }
 
   onOrden(o: OrdenResultados) {
     this.orden = o;

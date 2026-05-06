@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Gasolinera, FiltrosActivos } from '../../models/gasolinera.model';
 
@@ -13,6 +13,7 @@ export class TarjetaGasolineraComponent {
   @Input() gasolinera!: Gasolinera;
   @Input() filtros!: FiltrosActivos;
   @Input() esMasBarata = false;
+  @Output() seleccionarRuta = new EventEmitter<void>();
 
   get precioDestacado(): string {
     const precios: Record<string, string> = {

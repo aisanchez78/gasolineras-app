@@ -1,6 +1,7 @@
-import { Component, Input, OnChanges, OnDestroy, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, ElementRef, AfterViewInit, inject, SimpleChanges } from '@angular/core';
 import * as L from 'leaflet';
 import { Gasolinera, Coordenadas, FiltrosActivos } from '../../models/gasolinera.model';
+import { OsrmService } from '../../services/osrm.service';
 
 const iconGasolinera = L.icon({
   iconUrl:       'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
@@ -42,11 +43,16 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() gasolineras: Gasolinera[] = [];
   @Input() posicion: Coordenadas | null = null;
   @Input() filtros!: FiltrosActivos;
+  @Input() gasolineraSeleccionada: Gasolinera | null = null;
 
   private map: L.Map | null = null;
   private markers: L.Marker[] = [];
   private markerUsuario: L.Marker | null = null;
   private listo = false;
+  private rutaLayer: L.GeoJSON | null = null;
+  private panelRuta: L.Control | null = null;
+
+  private osrm = inject(OsrmService);
 
   constructor(private el: ElementRef) {}
 
@@ -61,8 +67,10 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
     this.actualizarMarcadores();
   }
 
-  ngOnChanges() {
-    if (this.listo) this.actualizarMarcadores();
+  ngOnChanges(changes: SimpleChanges) {
+    if (!this.listo) return;
+    if (changes['gasolineras'] || changes['posicion']) this.actualizarMarcadores();
+    if (changes['gasolineraSeleccionada']) this.actualizarRuta();
   }
 
   ngOnDestroy() {
@@ -116,6 +124,45 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
     } else {
       this.map.setView([this.posicion.lat, this.posicion.lng], 13);
     }
+  }
+
+  private actualizarRuta() {
+    this.rutaLayer?.remove();
+    this.rutaLayer = null;
+    if (this.panelRuta) { this.map?.removeControl(this.panelRuta); this.panelRuta = null; }
+
+    const g = this.gasolineraSeleccionada;
+    if (!g || !this.posicion || !this.map) return;
+
+    const destino: Coordenadas = {
+      lat: parseFloat(g.Latitud?.replace(',', '.') ?? '0'),
+      lng: parseFloat((g['Longitud (WGS84)'] ?? g.Longitud ?? '0').replace(',', '.')),
+    };
+
+    this.osrm.calcularRuta(this.posicion, destino).subscribe(ruta => {
+      if (!ruta || !this.map) return;
+
+      this.rutaLayer = L.geoJSON(ruta.geometry as any, {
+        style: { color: '#ff5f1f', weight: 5, opacity: 0.8 },
+      }).addTo(this.map);
+
+      const km = (ruta.distanciaMetros / 1000).toFixed(1);
+      const min = Math.round(ruta.duracionSegundos / 60);
+
+      const InfoControl = L.Control.extend({
+        onAdd: () => {
+          const div = L.DomUtil.create('div');
+          div.style.cssText = 'background:rgba(13,13,15,.95);color:#f0ede8;padding:.6rem 1rem;border-radius:12px;font-family:sans-serif;font-size:.85rem;border:1px solid rgba(255,95,31,.4);';
+          div.innerHTML = `🚗 <strong>${km} km</strong> · ${min} min`;
+          return div;
+        },
+      });
+      this.panelRuta = new (InfoControl as any)({ position: 'topright' });
+      this.panelRuta!.addTo(this.map);
+
+      const bounds = this.rutaLayer!.getBounds();
+      this.map.fitBounds(bounds, { padding: [40, 40] });
+    });
   }
 
   private precioDestacado(g: Gasolinera): string {

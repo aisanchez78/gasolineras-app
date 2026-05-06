@@ -17,6 +17,7 @@ export class ResultadosComponent {
   @Input() cargando = false;
   @Input() busquedaRealizada = false;
   @Output() ordenChanged = new EventEmitter<OrdenResultados>();
+  @Output() seleccionarRuta = new EventEmitter<Gasolinera>();
 
   opciones: { valor: OrdenResultados; etiqueta: string; icono: string }[] = [
     { valor: 'precio',    etiqueta: 'Precio',    icono: '💰' },
