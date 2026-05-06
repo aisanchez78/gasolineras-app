@@ -1,7 +1,11 @@
-import { Component, Input, OnChanges, OnDestroy, ElementRef, AfterViewInit, inject, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, ElementRef, AfterViewInit, inject, SimpleChanges } from '@angular/core';
 import * as L from 'leaflet';
 import { Gasolinera, Coordenadas, FiltrosActivos } from '../../models/gasolinera.model';
 import { OsrmService } from '../../services/osrm.service';
+
+const TILE_DARK  = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+const TILE_LIGHT = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+const TILE_ATTR  = '© <a href="https://www.openstreetmap.org/copyright">OSM</a> © <a href="https://carto.com/">CARTO</a>';
 
 const iconUsuario = L.divIcon({
   className: '',
@@ -60,12 +64,16 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() seleccionadas: Gasolinera[] = [];
   @Input() theme: 'dark' | 'light' = 'dark';
 
+  @Output() toggleComparacion = new EventEmitter<Gasolinera>();
+
   private map: L.Map | null = null;
   private markers: L.Marker[] = [];
   private markerUsuario: L.Marker | null = null;
   private listo = false;
   private rutaLayer: L.GeoJSON | null = null;
   private panelRuta: L.Control | null = null;
+  private tileLayer: L.TileLayer | null = null;
+  private gasolineraActivaEnMapa: Gasolinera | null = null;
 
   private osrm = inject(OsrmService);
 
@@ -74,8 +82,8 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
   ngAfterViewInit() {
     const contenedor = this.el.nativeElement.querySelector('.mapa-container');
     this.map = L.map(contenedor).setView([40.416775, -3.70379], 6);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    this.tileLayer = L.tileLayer(this.theme === 'dark' ? TILE_DARK : TILE_LIGHT, {
+      attribution: TILE_ATTR,
       maxZoom: 19,
     }).addTo(this.map);
     this.listo = true;
@@ -84,8 +92,15 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges) {
     if (!this.listo) return;
+    if (changes['theme']) {
+      this.tileLayer?.setUrl(this.theme === 'dark' ? TILE_DARK : TILE_LIGHT);
+      this.actualizarMarcadores();
+    }
     if (changes['gasolineras'] || changes['posicion'] || changes['seleccionadas']) this.actualizarMarcadores();
-    if (changes['gasolineraSeleccionada']) this.actualizarRuta();
+    if (changes['gasolineraSeleccionada']) {
+      this.gasolineraActivaEnMapa = null;
+      this.actualizarRuta();
+    }
   }
 
   ngOnDestroy() {
@@ -113,23 +128,56 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
 
       const precio    = this.precioDestacado(g);
       const distancia = g.distancia?.toFixed(1) ?? '?';
-      const estadoHtml = g.abierta
-        ? '<span style="color:#86efac">● Abierta</span>'
-        : '<span style="color:#fca5a5">● Cerrada</span>';
 
-      const popup = `
-        <div style="font-family:sans-serif;min-width:160px">
-          <strong style="font-size:.9rem">${g['Rótulo'] || 'Sin nombre'}</strong><br>
-          <small style="color:#888">${g['Dirección']}, ${g.Municipio}</small><br><br>
-          ${estadoHtml}<br>
-          <span style="font-size:1.1rem;font-weight:700">${precio} €/L</span><br>
-          <small>📍 ${distancia} km por carretera</small>
-        </div>`;
+      const dark     = this.theme === 'dark';
+      const popBg    = dark ? '#1a1a22'                : '#ffffff';
+      const popText  = dark ? '#f0ede8'                : '#1a1a1a';
+      const popSub   = dark ? 'rgba(255,255,255,.55)'  : 'rgba(0,0,0,.5)';
+      const btnBg    = dark ? 'rgba(255,255,255,.08)'  : 'rgba(0,0,0,.06)';
+      const btnBdr   = dark ? 'rgba(255,255,255,.15)'  : 'rgba(0,0,0,.12)';
+      const btnClr   = dark ? '#f0ede8'                : '#333';
+      const btnAccBg  = dark ? 'rgba(255,95,31,.15)'   : 'rgba(255,95,31,.1)';
+      const btnAccBdr = dark ? 'rgba(255,95,31,.4)'    : 'rgba(255,95,31,.35)';
+      const btnAccClr = dark ? '#ff9500'               : '#d94800';
+
+      const estadoHtml = g.abierta
+        ? `<span style="color:${dark ? '#22c55e' : '#16a34a'}">● Abierta</span>`
+        : `<span style="color:${dark ? '#ef4444' : '#dc2626'}">● Cerrada</span>`;
+
+      const BTN = `padding:5px 10px;border-radius:7px;font-family:'DM Sans',system-ui;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;`;
+
+      const popup = `<div style="font-family:'DM Sans',system-ui;min-width:180px;font-size:13px;color:${popText};background:${popBg};margin:-13px -20px;padding:14px 16px;border-radius:12px;">
+  <strong style="font-family:'Syne',sans-serif;font-size:14px;color:${popText}">${g['Rótulo'] || 'Sin nombre'}</strong><br>
+  <small style="color:${popSub}">${g['Dirección']}, ${g.Municipio}</small><br>
+  <div style="margin:6px 0 2px">${estadoHtml}</div>
+  <div style="font-size:20px;font-weight:800;margin:4px 0;color:${popText}">${precio} <span style="font-size:12px;font-weight:400;color:${popSub}">€/L</span></div>
+  <small style="color:${popSub}">📍 ${distancia} km</small>
+  <div style="display:flex;gap:5px;margin-top:10px">
+    <button data-accion="ruta" style="${BTN}background:${btnAccBg};border:1px solid ${btnAccBdr};color:${btnAccClr};">🚗 Ruta</button>
+    <button data-accion="comparar" style="${BTN}background:${btnBg};border:1px solid ${btnBdr};color:${btnClr};">+ Comparar</button>
+    <button data-accion="maps" style="${BTN}background:${btnBg};border:1px solid ${btnBdr};color:${btnClr};">Maps ↗</button>
+  </div>
+</div>`;
 
       const isSel = this.seleccionadas.some(s => s.IDEESS === g.IDEESS);
       const marker = L.marker([lat, lng], { icon: crearIconoGasolinera(g.abierta ?? false, isSel) })
         .addTo(this.map!)
         .bindPopup(popup);
+
+      marker.on('popupopen', () => {
+        const el = marker.getPopup()?.getElement();
+        if (!el) return;
+        const btnRuta     = el.querySelector<HTMLElement>('[data-accion="ruta"]');
+        const btnComparar = el.querySelector<HTMLElement>('[data-accion="comparar"]');
+        const btnMaps     = el.querySelector<HTMLElement>('[data-accion="maps"]');
+        if (btnRuta)     L.DomEvent.on(btnRuta,     'click', () => { this.gasolineraActivaEnMapa = g; this.actualizarRuta(); });
+        if (btnComparar) L.DomEvent.on(btnComparar, 'click', () => this.toggleComparacion.emit(g));
+        if (btnMaps)     L.DomEvent.on(btnMaps,     'click', () => {
+          const la = (g.Latitud || '0').replace(',', '.');
+          const lo = (g['Longitud (WGS84)'] || g.Longitud || '0').replace(',', '.');
+          window.open(`https://www.google.com/maps?q=${la},${lo}`, '_blank');
+        });
+      });
 
       this.markers.push(marker);
       bounds.push([lat, lng]);
@@ -147,7 +195,7 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
     this.rutaLayer = null;
     if (this.panelRuta) { this.map?.removeControl(this.panelRuta); this.panelRuta = null; }
 
-    const g = this.gasolineraSeleccionada;
+    const g = this.gasolineraActivaEnMapa ?? this.gasolineraSeleccionada;
     if (!g || !this.posicion || !this.map) return;
 
     const destino: Coordenadas = {
