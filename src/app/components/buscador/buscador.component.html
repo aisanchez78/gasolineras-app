@@ -11,19 +11,20 @@
   <!-- Búsqueda rápida por código postal -->
   <div class="seccion">
     <p class="seccion-label">Código postal <span class="seccion-badge">Más rápido</span></p>
-    <div class="cp-row">
+    <form class="cp-row" (ngSubmit)="searchByPostalCode()">
       <input
         class="cp-input"
         type="text"
         [(ngModel)]="postalCode"
+        name="postalCode"
         placeholder="ej. 30001"
         maxlength="5"
-        (keyup.enter)="searchByPostalCode()"
-        [disabled]="loading" />
-      <button class="btn-cp" (click)="searchByPostalCode()" [disabled]="loading || postalCode.length < 5">
+        [disabled]="loading"
+        aria-label="Código postal" />
+      <button class="btn-cp" type="submit" [disabled]="loading || postalCode.length < 5">
         {{ loading ? '...' : 'Buscar' }}
       </button>
-    </div>
+    </form>
   </div>
 
   <div class="separador"><span>o busca por dirección</span></div>
@@ -31,26 +32,27 @@
   <!-- Búsqueda por dirección -->
   <div class="seccion">
     <p class="seccion-label">Ciudad o dirección</p>
-    <div class="search-wrap">
+    <form class="search-wrap" (ngSubmit)="searchByAddress()">
       <input
         class="search-input"
         type="text"
         [(ngModel)]="searchText"
+        name="searchText"
         placeholder="ej. Murcia · Gran Vía Madrid · Sevilla"
-        (keyup.enter)="searchByAddress()"
-        [disabled]="loading" />
-      <button class="search-btn" (click)="searchByAddress()" [disabled]="loading">
+        [disabled]="loading"
+        aria-label="Ciudad o dirección" />
+      <button class="search-btn" type="submit" [disabled]="loading" aria-label="Buscar por dirección">
         <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
       </button>
-    </div>
+    </form>
   </div>
 
   <div class="separador"><span>o usa el GPS</span></div>
 
   <!-- GPS -->
-  <button class="btn-gps" (click)="useGps()" [disabled]="loading">
+  <button class="btn-gps" (click)="useGps()" [disabled]="loading" aria-label="Usar mi ubicación actual">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
       <circle cx="12" cy="12" r="3"/>
       <line x1="12" y1="2" x2="12" y2="6"/>

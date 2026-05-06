@@ -6,7 +6,9 @@
         <h1 class="app-title">GasolinApp</h1>
         <p class="app-tagline">Encuentra el carburante más barato cerca de ti</p>
       </div>
-      <button class="theme-toggle" (click)="toggleTheme()" [title]="theme() === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'">
+      <button class="theme-toggle" (click)="toggleTheme()"
+        [title]="theme() === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
+        [attr.aria-label]="theme() === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'">
         @if (theme() === 'dark') {
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
             <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
@@ -65,14 +67,18 @@
   </app-comparador>
 
   <nav class="mobile-tabs">
-    <button class="mobile-tab" [class.mobile-tab--active]="mobileTab() === 'list'" (click)="mobileTab.set('list')">
+    <button class="mobile-tab" [class.mobile-tab--active]="mobileTab() === 'list'"
+      [attr.aria-pressed]="mobileTab() === 'list'"
+      (click)="mobileTab.set('list')">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
         <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
         <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
       </svg>
       Lista
     </button>
-    <button class="mobile-tab" [class.mobile-tab--active]="mobileTab() === 'map'" (click)="mobileTab.set('map')">
+    <button class="mobile-tab" [class.mobile-tab--active]="mobileTab() === 'map'"
+      [attr.aria-pressed]="mobileTab() === 'map'"
+      (click)="mobileTab.set('map')">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
         <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
         <line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/>
