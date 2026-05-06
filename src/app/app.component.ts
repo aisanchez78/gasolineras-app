@@ -29,6 +29,13 @@ export class AppComponent {
   busquedaRealizada = false;
   seleccionadas: Gasolinera[] = [];
   gasolineraParaRuta: Gasolinera | null = null;
+  theme: 'dark' | 'light' = 'dark';
+
+  toggleTheme() {
+    this.theme = this.theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', this.theme);
+    this.cdr.detectChanges();
+  }
 
   onPosicion(pos: Coordenadas) { this.posicion = pos; this.buscar(); }
 

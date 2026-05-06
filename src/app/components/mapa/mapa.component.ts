@@ -58,6 +58,7 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() filtros!: FiltrosActivos;
   @Input() gasolineraSeleccionada: Gasolinera | null = null;
   @Input() seleccionadas: Gasolinera[] = [];
+  @Input() theme: 'dark' | 'light' = 'dark';
 
   private map: L.Map | null = null;
   private markers: L.Marker[] = [];
