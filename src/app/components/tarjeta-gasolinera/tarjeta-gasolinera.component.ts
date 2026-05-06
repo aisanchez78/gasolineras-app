@@ -13,6 +13,9 @@ export class TarjetaGasolineraComponent {
   @Input() gasolinera!: Gasolinera;
   @Input() filtros!: FiltrosActivos;
   @Input() esMasBarata = false;
+  @Input() enComparacion = false;
+  @Input() comparacionLlena = false;
+  @Output() toggleComparacion = new EventEmitter<void>();
   @Output() seleccionarRuta = new EventEmitter<void>();
 
   get precioDestacado(): string {

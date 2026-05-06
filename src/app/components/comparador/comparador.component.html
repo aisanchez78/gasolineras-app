@@ -1,0 +1,78 @@
+@if (seleccionadas.length > 0) {
+  <div class="comparador">
+    <div class="comparador-bar">
+      <div class="bar-chips">
+        @for (g of seleccionadas; track g.IDEESS) {
+          <span class="chip">
+            {{ g['Rótulo'] }}
+            <button class="chip-remove" (click)="remover.emit(g)" aria-label="Quitar">✕</button>
+          </span>
+        }
+      </div>
+      <div class="bar-acciones">
+        @if (seleccionadas.length < 3) {
+          <span class="bar-hint">Añade {{ 3 - seleccionadas.length }} más para comparar</span>
+        }
+        <button class="btn-comparar" [disabled]="seleccionadas.length < 2" (click)="togglePanel()">
+          {{ panelAbierto ? 'Cerrar' : 'Comparar' }} ({{ seleccionadas.length }}/3)
+        </button>
+        <button class="btn-limpiar" (click)="limpiar.emit()">Limpiar</button>
+      </div>
+    </div>
+
+    @if (panelAbierto) {
+      <div class="comparador-panel">
+        <table class="tabla">
+          <thead>
+            <tr>
+              <th class="col-label"></th>
+              @for (g of seleccionadas; track g.IDEESS) {
+                <th class="col-gasolinera">
+                  <div class="col-header">
+                    <span class="col-rotulo">{{ g['Rótulo'] }}</span>
+                    <button class="col-remove" (click)="remover.emit(g)" aria-label="Quitar">✕</button>
+                  </div>
+                </th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="fila-label">Estado</td>
+              @for (g of seleccionadas; track g.IDEESS) {
+                <td>
+                  <span class="estado" [class.estado--abierta]="g.abierta" [class.estado--cerrada]="!g.abierta">
+                    {{ g.abierta ? 'Abierta' : 'Cerrada' }}
+                  </span>
+                </td>
+              }
+            </tr>
+            <tr>
+              <td class="fila-label">Dirección</td>
+              @for (g of seleccionadas; track g.IDEESS) {
+                <td class="fila-dir">{{ g['Dirección'] }}, {{ g.Municipio }}</td>
+              }
+            </tr>
+            <tr>
+              <td class="fila-label">Distancia</td>
+              @for (g of seleccionadas; track g.IDEESS) {
+                <td [class.mejor]="esMejorDistancia(g)">{{ g.distancia?.toFixed(1) }} km</td>
+              }
+            </tr>
+            @for (fila of filas; track fila.campo) {
+              <tr [class.fila-destacada]="labelCarburante() === fila.label">
+                <td class="fila-label">{{ fila.label }}</td>
+                @for (g of seleccionadas; track g.IDEESS) {
+                  <td [class.mejor]="esMejorPrecio(g, fila.campo)" [class.sin-precio]="precio(g, fila.campo) === '—'">
+                    {{ precio(g, fila.campo) }}
+                    @if (precio(g, fila.campo) !== '—') { <span class="unidad">€/L</span> }
+                  </td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+}

@@ -1,0 +1,120 @@
+.comparador {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 200;
+  background: rgba(13,13,15,0.97);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-top: 1px solid rgba(255,95,31,0.25);
+  box-shadow: 0 -8px 40px rgba(0,0,0,0.5);
+}
+
+.comparador-bar {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: .85rem 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.bar-chips { display: flex; gap: .5rem; flex-wrap: wrap; flex: 1; }
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .3rem .7rem;
+  background: rgba(255,95,31,0.12);
+  border: 1px solid rgba(255,95,31,0.3);
+  border-radius: 20px;
+  font-size: .75rem;
+  font-weight: 600;
+  color: var(--accent-2);
+  white-space: nowrap;
+}
+
+.chip-remove {
+  background: none; border: none; color: var(--accent-2);
+  cursor: pointer; font-size: .65rem; padding: 0; opacity: .6;
+  &:hover { opacity: 1; }
+}
+
+.bar-acciones { display: flex; align-items: center; gap: .6rem; flex-shrink: 0; }
+
+.bar-hint { font-size: .72rem; color: var(--text-hint); white-space: nowrap; }
+
+.btn-comparar {
+  padding: .5rem 1.25rem;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border: none; border-radius: var(--radius-sm);
+  color: #fff; font-family: 'DM Sans', sans-serif;
+  font-size: .82rem; font-weight: 700; cursor: pointer;
+  transition: opacity .15s, transform .15s; white-space: nowrap;
+  &:hover:not(:disabled) { opacity: .9; transform: translateY(-1px); }
+  &:disabled { opacity: .35; cursor: not-allowed; }
+}
+
+.btn-limpiar {
+  padding: .5rem .9rem;
+  background: transparent;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-family: 'DM Sans', sans-serif; font-size: .78rem; font-weight: 500;
+  cursor: pointer; transition: all .15s; white-space: nowrap;
+  &:hover { border-color: rgba(239,68,68,0.4); color: #fca5a5; background: rgba(239,68,68,0.08); }
+}
+
+.comparador-panel {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2.5rem 1.5rem;
+  border-top: 1px solid var(--border);
+  animation: slideUp .2s ease;
+  overflow-x: auto;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.tabla {
+  width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: .82rem;
+  th, td { padding: .6rem 1rem; text-align: left; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  thead th { padding-top: 1rem; padding-bottom: .75rem; border-bottom: 1px solid var(--border-light); }
+}
+
+.col-label { width: 110px; }
+.col-header { display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
+.col-rotulo { font-family: 'Syne', sans-serif; font-size: .85rem; font-weight: 700; color: var(--text-primary); }
+
+.col-remove {
+  background: none; border: none; color: var(--text-hint);
+  cursor: pointer; font-size: .7rem; padding: .15rem .3rem; border-radius: 4px;
+  transition: all .15s;
+  &:hover { background: rgba(239,68,68,0.15); color: #fca5a5; }
+}
+
+.fila-label { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text-hint); white-space: nowrap; }
+.fila-dir { font-size: .75rem; color: var(--text-secondary); font-weight: 300; line-height: 1.4; }
+.fila-destacada { background: rgba(255,95,31,0.04); .fila-label { color: var(--accent-2); } }
+
+td.mejor { color: #86efac; font-weight: 700; .unidad { color: #86efac; opacity: .7; } }
+td.sin-precio { color: var(--text-hint); }
+.unidad { font-size: .7rem; font-weight: 400; color: var(--text-secondary); margin-left: .2rem; }
+
+.estado {
+  font-size: .65rem; font-weight: 700; padding: .2rem .6rem;
+  border-radius: 6px; text-transform: uppercase; letter-spacing: .06em;
+  &--abierta { background: var(--green-bg); color: #86efac; }
+  &--cerrada  { background: var(--red-bg);   color: #fca5a5; }
+}
+
+@media (max-width: 960px) {
+  .comparador-bar { padding: .75rem 1rem; }
+  .comparador-panel { padding: 0 1rem 1rem; }
+  .bar-hint { display: none; }
+}
