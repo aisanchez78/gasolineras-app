@@ -16,6 +16,7 @@ export class TarjetaGasolineraComponent {
   @Input() enComparacion = false;
   @Input() comparacionLlena = false;
   @Output() toggleComparacion = new EventEmitter<void>();
+  @Output() seleccionarRuta = new EventEmitter<void>();
 
   get precioDestacado(): string {
     const precios: Record<string, string> = {

@@ -38,6 +38,7 @@
   <div class="tarjeta-footer">
     <span class="distancia">📍 {{ gasolinera.distancia?.toFixed(1) }} km</span>
     <div class="footer-acciones">
+      <button class="btn-ruta" (click)="seleccionarRuta.emit()" title="Ver ruta en mapa">🚗 Ruta</button>
       <button
         class="btn-comparar"
         [class.btn-comparar--activo]="enComparacion"

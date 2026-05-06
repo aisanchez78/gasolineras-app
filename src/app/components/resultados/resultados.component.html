@@ -40,7 +40,8 @@
           [esMasBarata]="orden === 'precio' && i === 0"
           [enComparacion]="estaSeleccionada(g)"
           [comparacionLlena]="comparacionLlena"
-          (toggleComparacion)="toggleComparacion.emit(g)">
+          (toggleComparacion)="toggleComparacion.emit(g)"
+          (seleccionarRuta)="seleccionarRuta.emit(g)">
         </app-tarjeta-gasolinera>
       }
     </div>

@@ -158,6 +158,15 @@
 
 .footer-acciones { display: flex; gap: .4rem; align-items: center; }
 
+.btn-ruta {
+  padding: .4rem .75rem;
+  background: transparent; border: 1px solid var(--border-light);
+  color: var(--text-secondary); border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif; font-size: .72rem; font-weight: 500;
+  cursor: pointer; transition: all .15s; white-space: nowrap;
+  &:hover { background: rgba(255,95,31,0.1); border-color: rgba(255,95,31,0.4); color: var(--accent-2); }
+}
+
 .btn-comparar {
   padding: .4rem .75rem;
   background: transparent; border: 1px solid var(--border-light);

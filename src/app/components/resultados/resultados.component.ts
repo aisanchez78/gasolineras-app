@@ -19,6 +19,7 @@ export class ResultadosComponent {
   @Input() seleccionadas: Gasolinera[] = [];
   @Output() ordenChanged = new EventEmitter<OrdenResultados>();
   @Output() toggleComparacion = new EventEmitter<Gasolinera>();
+  @Output() seleccionarRuta = new EventEmitter<Gasolinera>();
 
   opciones: { valor: OrdenResultados; etiqueta: string; icono: string }[] = [
     { valor: 'precio',    etiqueta: 'Precio',    icono: '💰' },
