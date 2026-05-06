@@ -16,11 +16,21 @@ export class ResultadosComponent {
   @Input() orden: OrdenResultados = 'precio';
   @Input() cargando = false;
   @Input() busquedaRealizada = false;
+  @Input() seleccionadas: Gasolinera[] = [];
   @Output() ordenChanged = new EventEmitter<OrdenResultados>();
+  @Output() toggleComparacion = new EventEmitter<Gasolinera>();
 
   opciones: { valor: OrdenResultados; etiqueta: string; icono: string }[] = [
     { valor: 'precio',    etiqueta: 'Precio',    icono: '💰' },
     { valor: 'distancia', etiqueta: 'Distancia', icono: '📍' },
     { valor: 'nombre',    etiqueta: 'Nombre',    icono: '🔤' },
   ];
+
+  estaSeleccionada(g: Gasolinera): boolean {
+    return this.seleccionadas.some(s => s.IDEESS === g.IDEESS);
+  }
+
+  get comparacionLlena(): boolean {
+    return this.seleccionadas.length >= 3;
+  }
 }

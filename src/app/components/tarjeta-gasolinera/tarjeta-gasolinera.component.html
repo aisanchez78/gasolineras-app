@@ -1,4 +1,4 @@
-<article class="tarjeta" [class.tarjeta--barata]="esMasBarata">
+<article class="tarjeta" [class.tarjeta--barata]="esMasBarata" [class.tarjeta--seleccionada]="enComparacion">
   @if (esMasBarata) {
     <div class="badge-barata">🏆 Más barata</div>
   }
@@ -37,6 +37,16 @@
 
   <div class="tarjeta-footer">
     <span class="distancia">📍 {{ gasolinera.distancia?.toFixed(1) }} km</span>
-    <button class="btn-maps" (click)="abrirEnMaps()">Ver en Maps →</button>
+    <div class="footer-acciones">
+      <button
+        class="btn-comparar"
+        [class.btn-comparar--activo]="enComparacion"
+        [disabled]="comparacionLlena && !enComparacion"
+        (click)="toggleComparacion.emit()"
+        [title]="enComparacion ? 'Quitar de comparación' : 'Añadir a comparación'">
+        {{ enComparacion ? '✓ Comparando' : '+ Comparar' }}
+      </button>
+      <button class="btn-maps" (click)="abrirEnMaps()">Maps →</button>
+    </div>
   </div>
 </article>

@@ -4,13 +4,14 @@ import { BuscadorComponent } from './components/buscador/buscador.component';
 import { FiltrosComponent } from './components/filtros/filtros.component';
 import { ResultadosComponent } from './components/resultados/resultados.component';
 import { MapaComponent } from './components/mapa/mapa.component';
+import { ComparadorComponent } from './components/comparador/comparador.component';
 import { GasolineraService } from './services/gasolinera.service';
 import { Gasolinera, FiltrosActivos, Coordenadas, OrdenResultados } from './models/gasolinera.model';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, BuscadorComponent, FiltrosComponent, ResultadosComponent, MapaComponent],
+  imports: [CommonModule, BuscadorComponent, FiltrosComponent, ResultadosComponent, MapaComponent, ComparadorComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
@@ -26,6 +27,7 @@ export class AppComponent {
   gasolinerasFiltradas: Gasolinera[] = [];
   cargando = false;
   busquedaRealizada = false;
+  seleccionadas: Gasolinera[] = [];
 
   onPosicion(pos: Coordenadas) { this.posicion = pos; this.buscar(); }
 
@@ -50,6 +52,26 @@ export class AppComponent {
       next: data => { this.todasGasolineras = data; this.aplicarFiltros(); },
       error: () => { this.cargando = false; this.busquedaRealizada = true; this.cdr.detectChanges(); },
     });
+  }
+
+  onToggleComparacion(g: Gasolinera) {
+    const idx = this.seleccionadas.findIndex(s => s.IDEESS === g.IDEESS);
+    if (idx >= 0) {
+      this.seleccionadas = this.seleccionadas.filter((_, i) => i !== idx);
+    } else if (this.seleccionadas.length < 3) {
+      this.seleccionadas = [...this.seleccionadas, g];
+    }
+    this.cdr.detectChanges();
+  }
+
+  onRemoverDeComparacion(g: Gasolinera) {
+    this.seleccionadas = this.seleccionadas.filter(s => s.IDEESS !== g.IDEESS);
+    this.cdr.detectChanges();
+  }
+
+  onLimpiarComparacion() {
+    this.seleccionadas = [];
+    this.cdr.detectChanges();
   }
 
   private aplicarFiltros() {

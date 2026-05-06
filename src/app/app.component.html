@@ -1,4 +1,4 @@
-<div class="app-shell">
+<div class="app-shell" [class.has-comparador]="seleccionadas.length > 0">
   <header class="app-header">
     <div class="header-inner">
       <div class="logo">⛽</div>
@@ -31,8 +31,17 @@
         [orden]="orden"
         [cargando]="cargando"
         [busquedaRealizada]="busquedaRealizada"
-        (ordenChanged)="onOrden($event)">
+        [seleccionadas]="seleccionadas"
+        (ordenChanged)="onOrden($event)"
+        (toggleComparacion)="onToggleComparacion($event)">
       </app-resultados>
     </div>
   </main>
+
+  <app-comparador
+    [seleccionadas]="seleccionadas"
+    [filtros]="filtros"
+    (remover)="onRemoverDeComparacion($event)"
+    (limpiar)="onLimpiarComparacion()">
+  </app-comparador>
 </div>
