@@ -29,6 +29,7 @@ export class AppComponent {
   busquedaRealizada = false;
   seleccionadas: Gasolinera[] = [];
   gasolineraParaRuta: Gasolinera | null = null;
+  mobileTab: 'list' | 'map' = 'list';
   theme: 'dark' | 'light' = 'dark';
 
   toggleTheme() {

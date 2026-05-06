@@ -29,7 +29,7 @@
       <app-filtros (filtrosChanged)="onFiltros($event)" />
     </aside>
 
-    <div class="contenido">
+    <div class="contenido" [class.mobile-map]="mobileTab === 'map'">
       @if (busquedaRealizada && gasolinerasFiltradas.length > 0) {
         <app-mapa
           [gasolineras]="gasolinerasFiltradas"
@@ -62,4 +62,21 @@
     (remover)="onRemoverDeComparacion($event)"
     (limpiar)="onLimpiarComparacion()">
   </app-comparador>
+
+  <nav class="mobile-tabs">
+    <button class="mobile-tab" [class.mobile-tab--active]="mobileTab === 'list'" (click)="mobileTab = 'list'">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
+        <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
+      </svg>
+      Lista
+    </button>
+    <button class="mobile-tab" [class.mobile-tab--active]="mobileTab === 'map'" (click)="mobileTab = 'map'">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
+        <line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/>
+      </svg>
+      Mapa
+    </button>
+  </nav>
 </div>
