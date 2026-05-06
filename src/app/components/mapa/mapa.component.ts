@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, ElementRef, AfterViewInit, inject, SimpleChanges } from '@angular/core';
 import * as L from 'leaflet';
-import { Gasolinera, Coordenadas, FiltrosActivos } from '../../models/gasolinera.model';
+import { Gasolinera, Coordinates, ActiveFilters } from '../../models/gasolinera.model';
 import { OsrmService } from '../../services/osrm.service';
 
 const TILE_DARK  = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
@@ -19,9 +19,9 @@ const iconUsuario = L.divIcon({
   iconAnchor: [9, 9],
 });
 
-function crearIconoGasolinera(abierta: boolean, seleccionada: boolean): L.DivIcon {
-  const color  = seleccionada ? '#ff5f1f' : (abierta ? '#16a34a' : '#dc2626');
-  const shadow = seleccionada ? 'rgba(255,95,31,.5)' : (abierta ? 'rgba(34,197,94,.4)' : 'rgba(239,68,68,.35)');
+function crearIconoGasolinera(isOpen: boolean, selected: boolean): L.DivIcon {
+  const color  = selected ? '#ff5f1f' : (isOpen ? '#16a34a' : '#dc2626');
+  const shadow = selected ? 'rgba(255,95,31,.5)' : (isOpen ? 'rgba(34,197,94,.4)' : 'rgba(239,68,68,.35)');
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="40" viewBox="0 0 32 40">
     <path d="M16 0C16 0 16 0 16 0L16 0C16 0 2 12 2 22c0 8 6.3 14 14 14s14-6 14-14C30 12 16 0 16 0z"
@@ -57,14 +57,14 @@ function crearIconoGasolinera(abierta: boolean, seleccionada: boolean): L.DivIco
   `],
 })
 export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
-  @Input() gasolineras: Gasolinera[] = [];
-  @Input() posicion: Coordenadas | null = null;
-  @Input() filtros!: FiltrosActivos;
-  @Input() gasolineraSeleccionada: Gasolinera | null = null;
-  @Input() seleccionadas: Gasolinera[] = [];
+  @Input() stations: Gasolinera[] = [];
+  @Input() location: Coordinates | null = null;
+  @Input() filters!: ActiveFilters;
+  @Input() routeTarget: Gasolinera | null = null;
+  @Input() comparisonSelection: Gasolinera[] = [];
   @Input() theme: 'dark' | 'light' = 'dark';
 
-  @Output() toggleComparacion = new EventEmitter<Gasolinera>();
+  @Output() toggleComparison = new EventEmitter<Gasolinera>();
 
   private map: L.Map | null = null;
   private markers: L.Marker[] = [];
@@ -73,7 +73,7 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
   private rutaLayer: L.GeoJSON | null = null;
   private panelRuta: L.Control | null = null;
   private tileLayer: L.TileLayer | null = null;
-  private gasolineraActivaEnMapa: Gasolinera | null = null;
+  private activeMarkerStation: Gasolinera | null = null;
 
   private osrm = inject(OsrmService);
 
@@ -87,19 +87,19 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
       maxZoom: 19,
     }).addTo(this.map);
     this.listo = true;
-    this.actualizarMarcadores();
+    this.updateMarkers();
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (!this.listo) return;
     if (changes['theme']) {
       this.tileLayer?.setUrl(this.theme === 'dark' ? TILE_DARK : TILE_LIGHT);
-      this.actualizarMarcadores();
+      this.updateMarkers();
     }
-    if (changes['gasolineras'] || changes['posicion'] || changes['seleccionadas']) this.actualizarMarcadores();
-    if (changes['gasolineraSeleccionada']) {
-      this.gasolineraActivaEnMapa = null;
-      this.actualizarRuta();
+    if (changes['stations'] || changes['location'] || changes['comparisonSelection']) this.updateMarkers();
+    if (changes['routeTarget']) {
+      this.activeMarkerStation = null;
+      this.updateRoute();
     }
   }
 
@@ -107,27 +107,27 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
     this.map?.remove();
   }
 
-  private actualizarMarcadores() {
+  private updateMarkers() {
     if (!this.map) return;
     this.markers.forEach(m => m.remove());
     this.markers = [];
     this.markerUsuario?.remove();
 
-    if (!this.posicion) return;
+    if (!this.location) return;
 
-    this.markerUsuario = L.marker([this.posicion.lat, this.posicion.lng], { icon: iconUsuario })
+    this.markerUsuario = L.marker([this.location.lat, this.location.lng], { icon: iconUsuario })
       .addTo(this.map)
       .bindPopup('<strong>Tu ubicación</strong>');
 
-    const bounds: [number, number][] = [[this.posicion.lat, this.posicion.lng]];
+    const bounds: [number, number][] = [[this.location.lat, this.location.lng]];
 
-    for (const g of this.gasolineras) {
+    for (const g of this.stations) {
       const lat = parseFloat(g.Latitud?.replace(',', '.') ?? '0');
       const lng = parseFloat((g['Longitud (WGS84)'] ?? g.Longitud ?? '0').replace(',', '.'));
       if (!lat || !lng) continue;
 
-      const precio    = this.precioDestacado(g);
-      const distancia = g.distancia?.toFixed(1) ?? '?';
+      const price    = this.getHighlightedPrice(g);
+      const distance = g.distance?.toFixed(1) ?? '?';
 
       const dark     = this.theme === 'dark';
       const popBg    = dark ? '#1a1a22'                : '#ffffff';
@@ -140,7 +140,7 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
       const btnAccBdr = dark ? 'rgba(255,95,31,.4)'    : 'rgba(255,95,31,.35)';
       const btnAccClr = dark ? '#ff9500'               : '#d94800';
 
-      const estadoHtml = g.abierta
+      const statusHtml = g.isOpen
         ? `<span style="color:${dark ? '#22c55e' : '#16a34a'}">● Abierta</span>`
         : `<span style="color:${dark ? '#ef4444' : '#dc2626'}">● Cerrada</span>`;
 
@@ -149,9 +149,9 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
       const popup = `<div style="font-family:'DM Sans',system-ui;min-width:180px;font-size:13px;color:${popText};background:${popBg};margin:-13px -20px;padding:14px 16px;border-radius:12px;">
   <strong style="font-family:'Syne',sans-serif;font-size:14px;color:${popText}">${g['Rótulo'] || 'Sin nombre'}</strong><br>
   <small style="color:${popSub}">${g['Dirección']}, ${g.Municipio}</small><br>
-  <div style="margin:6px 0 2px">${estadoHtml}</div>
-  <div style="font-size:20px;font-weight:800;margin:4px 0;color:${popText}">${precio} <span style="font-size:12px;font-weight:400;color:${popSub}">€/L</span></div>
-  <small style="color:${popSub}">📍 ${distancia} km</small>
+  <div style="margin:6px 0 2px">${statusHtml}</div>
+  <div style="font-size:20px;font-weight:800;margin:4px 0;color:${popText}">${price} <span style="font-size:12px;font-weight:400;color:${popSub}">€/L</span></div>
+  <small style="color:${popSub}">📍 ${distance} km</small>
   <div style="display:flex;gap:5px;margin-top:10px">
     <button data-accion="ruta" style="${BTN}background:${btnAccBg};border:1px solid ${btnAccBdr};color:${btnAccClr};">🚗 Ruta</button>
     <button data-accion="comparar" style="${BTN}background:${btnBg};border:1px solid ${btnBdr};color:${btnClr};">+ Comparar</button>
@@ -159,8 +159,8 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
   </div>
 </div>`;
 
-      const isSel = this.seleccionadas.some(s => s.IDEESS === g.IDEESS);
-      const marker = L.marker([lat, lng], { icon: crearIconoGasolinera(g.abierta ?? false, isSel) })
+      const isSel = this.comparisonSelection.some(s => s.IDEESS === g.IDEESS);
+      const marker = L.marker([lat, lng], { icon: crearIconoGasolinera(g.isOpen ?? false, isSel) })
         .addTo(this.map!)
         .bindPopup(popup);
 
@@ -170,8 +170,8 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
         const btnRuta     = el.querySelector<HTMLElement>('[data-accion="ruta"]');
         const btnComparar = el.querySelector<HTMLElement>('[data-accion="comparar"]');
         const btnMaps     = el.querySelector<HTMLElement>('[data-accion="maps"]');
-        if (btnRuta)     L.DomEvent.on(btnRuta,     'click', () => { this.gasolineraActivaEnMapa = g; this.actualizarRuta(); });
-        if (btnComparar) L.DomEvent.on(btnComparar, 'click', () => this.toggleComparacion.emit(g));
+        if (btnRuta)     L.DomEvent.on(btnRuta,     'click', () => { this.activeMarkerStation = g; this.updateRoute(); });
+        if (btnComparar) L.DomEvent.on(btnComparar, 'click', () => this.toggleComparison.emit(g));
         if (btnMaps)     L.DomEvent.on(btnMaps,     'click', () => {
           const la = (g.Latitud || '0').replace(',', '.');
           const lo = (g['Longitud (WGS84)'] || g.Longitud || '0').replace(',', '.');
@@ -186,32 +186,32 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
     if (bounds.length > 1) {
       this.map.fitBounds(bounds, { padding: [40, 40] });
     } else {
-      this.map.setView([this.posicion.lat, this.posicion.lng], 13);
+      this.map.setView([this.location.lat, this.location.lng], 13);
     }
   }
 
-  private actualizarRuta() {
+  private updateRoute() {
     this.rutaLayer?.remove();
     this.rutaLayer = null;
     if (this.panelRuta) { this.map?.removeControl(this.panelRuta); this.panelRuta = null; }
 
-    const g = this.gasolineraActivaEnMapa ?? this.gasolineraSeleccionada;
-    if (!g || !this.posicion || !this.map) return;
+    const g = this.activeMarkerStation ?? this.routeTarget;
+    if (!g || !this.location || !this.map) return;
 
-    const destino: Coordenadas = {
+    const destination: Coordinates = {
       lat: parseFloat(g.Latitud?.replace(',', '.') ?? '0'),
       lng: parseFloat((g['Longitud (WGS84)'] ?? g.Longitud ?? '0').replace(',', '.')),
     };
 
-    this.osrm.calcularRuta(this.posicion, destino).subscribe(ruta => {
-      if (!ruta || !this.map) return;
+    this.osrm.getRoute(this.location, destination).subscribe(route => {
+      if (!route || !this.map) return;
 
-      this.rutaLayer = L.geoJSON(ruta.geometry as any, {
+      this.rutaLayer = L.geoJSON(route.geometry as any, {
         style: { color: '#ff5f1f', weight: 5, opacity: 0.8 },
       }).addTo(this.map);
 
-      const km = (ruta.distanciaMetros / 1000).toFixed(1);
-      const min = Math.round(ruta.duracionSegundos / 60);
+      const km = (route.distanceMeters / 1000).toFixed(1);
+      const min = Math.round(route.durationSeconds / 60);
 
       const InfoControl = L.Control.extend({
         onAdd: () => {
@@ -229,13 +229,13 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
     });
   }
 
-  private precioDestacado(g: Gasolinera): string {
-    const precios: Record<string, string> = {
+  private getHighlightedPrice(g: Gasolinera): string {
+    const prices: Record<string, string> = {
       gasolina95:    g['Precio Gasolina 95 E5'],
       gasoil:        g['Precio Gasoleo A'],
       gasolina98:    g['Precio Gasolina 98 E5'],
       gasoilPremium: g['Precio Gasoil Premium'],
     };
-    return precios[this.filtros?.carburante] || '—';
+    return prices[this.filters?.fuelType] || '—';
   }
 }

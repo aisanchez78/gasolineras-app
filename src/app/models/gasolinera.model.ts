@@ -27,8 +27,8 @@ export interface Gasolinera {
   'Tipo Venta': string;
   '% BioEtanol': string;
   '% Éster metílico': string;
-  distancia?: number;
-  abierta?: boolean;
+  distance?: number;
+  isOpen?: boolean;
   // alias de compatibilidad
   Longitud?: string;
 }
@@ -40,15 +40,15 @@ export interface RespuestaAPI {
   ResultadoConsulta: string;
 }
 
-export interface FiltrosActivos {
-  carburante: 'gasolina95' | 'gasoil' | 'gasolina98' | 'gasoilPremium';
-  marcas: string[];
-  radioKm: number;
+export interface ActiveFilters {
+  fuelType: 'gasolina95' | 'gasoil' | 'gasolina98' | 'gasoilPremium';
+  brands: string[];
+  radiusKm: number;
 }
 
-export interface Coordenadas {
+export interface Coordinates {
   lat: number;
   lng: number;
 }
 
-export type OrdenResultados = 'precio' | 'distancia' | 'nombre';
+export type SortOrder = 'price' | 'distance' | 'name';

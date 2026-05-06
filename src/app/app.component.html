@@ -1,4 +1,4 @@
-<div class="app-shell" [class.has-comparador]="seleccionadas.length > 0" [attr.data-theme]="theme">
+<div class="app-shell" [class.has-comparador]="comparisonSelection.length > 0" [attr.data-theme]="theme">
   <header class="app-header">
     <div class="header-inner">
       <div class="logo">⛽</div>
@@ -25,43 +25,43 @@
 
   <main class="app-main">
     <aside class="sidebar">
-      <app-buscador (posicionDetectada)="onPosicion($event)" />
-      <app-filtros (filtrosChanged)="onFiltros($event)" />
+      <app-buscador (locationDetected)="onLocationDetected($event)" />
+      <app-filtros (filtersChanged)="onFiltersChanged($event)" />
     </aside>
 
     <div class="contenido" [class.mobile-map]="mobileTab === 'map'">
-      @if (busquedaRealizada && gasolinerasFiltradas.length > 0) {
+      @if (hasSearched && filteredStations.length > 0) {
         <app-mapa
-          [gasolineras]="gasolinerasFiltradas"
-          [posicion]="posicion"
-          [filtros]="filtros"
-          [gasolineraSeleccionada]="gasolineraParaRuta"
-          [seleccionadas]="seleccionadas"
+          [stations]="filteredStations"
+          [location]="userLocation"
+          [filters]="filters"
+          [routeTarget]="routeTarget"
+          [comparisonSelection]="comparisonSelection"
           [theme]="theme"
-          (toggleComparacion)="onToggleComparacion($event)"
+          (toggleComparison)="onToggleComparison($event)"
           class="mapa-wrap">
         </app-mapa>
       }
 
       <app-resultados
-        [gasolineras]="gasolinerasFiltradas"
-        [filtros]="filtros"
-        [orden]="orden"
-        [cargando]="cargando"
-        [busquedaRealizada]="busquedaRealizada"
-        [seleccionadas]="seleccionadas"
-        (ordenChanged)="onOrden($event)"
-        (toggleComparacion)="onToggleComparacion($event)"
-        (seleccionarRuta)="onSeleccionarRuta($event)">
+        [stations]="filteredStations"
+        [filters]="filters"
+        [order]="order"
+        [loading]="loading"
+        [hasSearched]="hasSearched"
+        [comparisonSelection]="comparisonSelection"
+        (orderChanged)="onOrderChanged($event)"
+        (toggleComparison)="onToggleComparison($event)"
+        (routeSelected)="onRouteSelected($event)">
       </app-resultados>
     </div>
   </main>
 
   <app-comparador
-    [seleccionadas]="seleccionadas"
-    [filtros]="filtros"
-    (remover)="onRemoverDeComparacion($event)"
-    (limpiar)="onLimpiarComparacion()">
+    [comparisonSelection]="comparisonSelection"
+    [filters]="filters"
+    (remove)="onRemoveFromComparison($event)"
+    (clear)="onClearComparison()">
   </app-comparador>
 
   <nav class="mobile-tabs">

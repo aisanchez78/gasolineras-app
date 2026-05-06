@@ -15,13 +15,13 @@
       <input
         class="cp-input"
         type="text"
-        [(ngModel)]="codigoPostal"
+        [(ngModel)]="postalCode"
         placeholder="ej. 30001"
         maxlength="5"
-        (keyup.enter)="buscarPorCP()"
-        [disabled]="cargando" />
-      <button class="btn-cp" (click)="buscarPorCP()" [disabled]="cargando || codigoPostal.length < 5">
-        {{ cargando ? '...' : 'Buscar' }}
+        (keyup.enter)="searchByPostalCode()"
+        [disabled]="loading" />
+      <button class="btn-cp" (click)="searchByPostalCode()" [disabled]="loading || postalCode.length < 5">
+        {{ loading ? '...' : 'Buscar' }}
       </button>
     </div>
   </div>
@@ -35,11 +35,11 @@
       <input
         class="search-input"
         type="text"
-        [(ngModel)]="textoBusqueda"
+        [(ngModel)]="searchText"
         placeholder="ej. Murcia · Gran Vía Madrid · Sevilla"
-        (keyup.enter)="buscarPorDireccion()"
-        [disabled]="cargando" />
-      <button class="search-btn" (click)="buscarPorDireccion()" [disabled]="cargando">
+        (keyup.enter)="searchByAddress()"
+        [disabled]="loading" />
+      <button class="search-btn" (click)="searchByAddress()" [disabled]="loading">
         <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
@@ -50,7 +50,7 @@
   <div class="separador"><span>o usa el GPS</span></div>
 
   <!-- GPS -->
-  <button class="btn-gps" (click)="usarGPS()" [disabled]="cargando">
+  <button class="btn-gps" (click)="useGps()" [disabled]="loading">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
       <circle cx="12" cy="12" r="3"/>
       <line x1="12" y1="2" x2="12" y2="6"/>
@@ -58,19 +58,19 @@
       <line x1="2" y1="12" x2="6" y2="12"/>
       <line x1="18" y1="12" x2="22" y2="12"/>
     </svg>
-    {{ cargando ? 'Detectando ubicación...' : 'Usar mi ubicación actual' }}
+    {{ loading ? 'Detectando ubicación...' : 'Usar mi ubicación actual' }}
   </button>
 
   @if (error) {
     <p class="error-msg">⚠ {{ error }}</p>
   }
 
-  @if (nombreLugar) {
+  @if (locationName) {
     <div class="lugar-encontrado">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
       </svg>
-      <span>{{ nombreLugar }}</span>
+      <span>{{ locationName }}</span>
     </div>
   }
 

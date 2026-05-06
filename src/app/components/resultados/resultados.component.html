@@ -1,31 +1,31 @@
 <section class="resultados-section">
-  @if (cargando) {
+  @if (loading) {
     <div class="estado-info">
       <div class="spinner"></div>
       <p>Buscando gasolineras cercanas…</p>
     </div>
-  } @else if (busquedaRealizada && gasolineras.length === 0) {
+  } @else if (hasSearched && stations.length === 0) {
     <div class="estado-info">
       <span class="estado-icon">🔍</span>
       <p>No hay gasolineras en ese radio con los filtros actuales.</p>
     </div>
-  } @else if (gasolineras.length > 0) {
+  } @else if (stations.length > 0) {
 
     <div class="resultados-header">
       <div class="resultados-info">
-        <h2 class="resultados-titulo">{{ gasolineras.length }} gasolineras</h2>
-        <span class="resultados-subtitulo">radio {{ filtros.radioKm }} km</span>
+        <h2 class="resultados-titulo">{{ stations.length }} gasolineras</h2>
+        <span class="resultados-subtitulo">radio {{ filters.radiusKm }} km</span>
       </div>
 
       <div class="orden-wrap">
         <span class="orden-label">Ordenar por</span>
         <div class="orden-chips">
-          @for (op of opciones; track op.valor) {
+          @for (op of opciones; track op.value) {
             <button
               class="orden-chip"
-              [class.orden-chip--active]="orden === op.valor"
-              (click)="ordenChanged.emit(op.valor)">
-              {{ op.icono }} {{ op.etiqueta }}
+              [class.orden-chip--active]="order === op.value"
+              (click)="orderChanged.emit(op.value)">
+              {{ op.icon }} {{ op.label }}
             </button>
           }
         </div>
@@ -33,15 +33,15 @@
     </div>
 
     <div class="grid">
-      @for (g of gasolineras; track g.IDEESS; let i = $index) {
+      @for (g of stations; track g.IDEESS; let i = $index) {
         <app-tarjeta-gasolinera
-          [gasolinera]="g"
-          [filtros]="filtros"
-          [esMasBarata]="orden === 'precio' && i === 0"
-          [enComparacion]="estaSeleccionada(g)"
-          [comparacionLlena]="comparacionLlena"
-          (toggleComparacion)="toggleComparacion.emit(g)"
-          (seleccionarRuta)="seleccionarRuta.emit(g)">
+          [station]="g"
+          [filters]="filters"
+          [isCheapest]="order === 'price' && i === 0"
+          [isInComparison]="isSelected(g)"
+          [isComparisonFull]="isComparisonFull"
+          (toggleComparison)="toggleComparison.emit(g)"
+          (routeSelected)="routeSelected.emit(g)">
         </app-tarjeta-gasolinera>
       }
     </div>

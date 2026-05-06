@@ -4,25 +4,25 @@
   <div class="filtro-grupo">
     <label class="filtro-label">Tipo de carburante</label>
     <div class="chips-row">
-      @for (tipo of tiposCarburante; track tipo.valor) {
+      @for (tipo of fuelTypes; track tipo.value) {
         <button
           class="chip"
-          [class.chip--active]="carburante === tipo.valor"
-          (click)="carburante = tipo.valor; emitir()">
-          {{ tipo.etiqueta }}
+          [class.chip--active]="fuelType === tipo.value"
+          (click)="fuelType = tipo.value; emit()">
+          {{ tipo.label }}
         </button>
       }
     </div>
   </div>
 
   <div class="filtro-grupo">
-    <label class="filtro-label">Radio de búsqueda: <strong>{{ radioKm }} km</strong></label>
+    <label class="filtro-label">Radio de búsqueda: <strong>{{ radiusKm }} km</strong></label>
     <input
   type="range" min="1" max="50"
-  [(ngModel)]="radioKm"
-  (ngModelChange)="emitir()"
+  [(ngModel)]="radiusKm"
+  (ngModelChange)="emit()"
   class="slider"
-  [style]="'--pct:' + (radioKm * 2) + '%'" />    <div class="slider-ticks">
+  [style]="'--pct:' + (radiusKm * 2) + '%'" />    <div class="slider-ticks">
       <span>1 km</span><span>25 km</span><span>50 km</span>
     </div>
   </div>
@@ -30,17 +30,17 @@
   <div class="filtro-grupo">
     <label class="filtro-label">Filtrar por marca (lista blanca)</label>
     <div class="marcas-grid">
-      @for (marca of marcasDisponibles; track marca) {
+      @for (brand of availableBrands; track brand) {
         <button
           class="marca-chip"
-          [class.marca-chip--active]="estaSeleccionada(marca)"
-          (click)="toggleMarca(marca)">
-          {{ marca }}
+          [class.marca-chip--active]="isBrandSelected(brand)"
+          (click)="toggleBrand(brand)">
+          {{ brand }}
         </button>
       }
     </div>
-    @if (marcasBlanqueadas.length > 0) {
-      <p class="marcas-nota">Mostrando solo: {{ marcasBlanqueadas.join(', ') }}</p>
+    @if (selectedBrands.length > 0) {
+      <p class="marcas-nota">Mostrando solo: {{ selectedBrands.join(', ') }}</p>
     }
   </div>
 </section>

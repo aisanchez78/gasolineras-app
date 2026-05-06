@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
+import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { Coordenadas } from '../models/gasolinera.model';
+import { Coordinates } from '../models/gasolinera.model';
 import { map } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class GeoService {
   private http = inject(HttpClient);
 
-  obtenerPosicion(): Observable<Coordenadas> {
+  obtenerPosicion(): Observable<Coordinates> {
     if (!navigator.geolocation) {
-      return this.obtenerPorIP();
+      return this.getLocationByIp();
     }
 
     return new Observable(observer => {
@@ -23,7 +23,7 @@ export class GeoService {
         err => {
           console.warn('GPS falló (code ' + err.code + '), intentando por IP...');
           // Fallback automático a geolocalización por IP
-          this.obtenerPorIP().subscribe({
+          this.getLocationByIp().subscribe({
             next: coords => { observer.next(coords); observer.complete(); },
             error: e => observer.error(e)
           });
@@ -33,7 +33,7 @@ export class GeoService {
     });
   }
 
-  private obtenerPorIP(): Observable<Coordenadas> {
+  private getLocationByIp(): Observable<Coordinates> {
     return new Observable(observer => {
       this.http.get<any>('https://ipapi.co/json/').subscribe({
         next: data => {
@@ -64,7 +64,7 @@ export class GeoService {
     });
   }
 
-  calcularDistanciaKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  calcDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
     const R = 6371;
     const dLat = this.toRad(lat2 - lat1);
     const dLon = this.toRad(lon2 - lon1);
@@ -78,20 +78,21 @@ export class GeoService {
   private toRad(deg: number): number {
     return deg * (Math.PI / 180);
   }
-  buscarDireccion(direccion: string): Observable<Coordenadas & { nombreLugar: string }> {
-  const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(direccion)}&countrycodes=es&limit=1`;
-  return this.http.get<any[]>(url).pipe(
-    map(resultados => {
-      if (!resultados || resultados.length === 0) {
-        throw new Error('Dirección no encontrada');
-      }
-      const r = resultados[0];
-      return {
-        lat: parseFloat(r.lat),
-        lng: parseFloat(r.lon),
-        nombreLugar: r.display_name
-      };
-    })
-  );
-}
+
+  geocodeAddress(address: string): Observable<Coordinates & { locationName: string }> {
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&countrycodes=es&limit=1`;
+    return this.http.get<any[]>(url).pipe(
+      map(results => {
+        if (!results || results.length === 0) {
+          throw new Error('Dirección no encontrada');
+        }
+        const r = results[0];
+        return {
+          lat: parseFloat(r.lat),
+          lng: parseFloat(r.lon),
+          locationName: r.display_name
+        };
+      })
+    );
+  }
 }
