@@ -1,4 +1,4 @@
-<div class="app-shell" [class.has-comparador]="comparisonSelection.length > 0" [attr.data-theme]="theme">
+<div class="app-shell" [class.has-comparador]="comparisonSelection().length > 0" [attr.data-theme]="theme()">
   <header class="app-header">
     <div class="header-inner">
       <div class="logo">⛽</div>
@@ -6,8 +6,8 @@
         <h1 class="app-title">GasolinApp</h1>
         <p class="app-tagline">Encuentra el carburante más barato cerca de ti</p>
       </div>
-      <button class="theme-toggle" (click)="toggleTheme()" [title]="theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'">
-        @if (theme === 'dark') {
+      <button class="theme-toggle" (click)="toggleTheme()" [title]="theme() === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'">
+        @if (theme() === 'dark') {
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
             <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
             <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
@@ -29,27 +29,27 @@
       <app-filtros (filtersChanged)="onFiltersChanged($event)" />
     </aside>
 
-    <div class="contenido" [class.mobile-map]="mobileTab === 'map'">
-      @if (hasSearched && filteredStations.length > 0) {
+    <div class="contenido" [class.mobile-map]="mobileTab() === 'map'">
+      @if (hasSearched() && filteredStations().length > 0) {
         <app-mapa
-          [stations]="filteredStations"
-          [location]="userLocation"
-          [filters]="filters"
-          [routeTarget]="routeTarget"
-          [comparisonSelection]="comparisonSelection"
-          [theme]="theme"
+          [stations]="filteredStations()"
+          [location]="userLocation()"
+          [filters]="filters()"
+          [routeTarget]="routeTarget()"
+          [comparisonSelection]="comparisonSelection()"
+          [theme]="theme()"
           (toggleComparison)="onToggleComparison($event)"
           class="mapa-wrap">
         </app-mapa>
       }
 
       <app-resultados
-        [stations]="filteredStations"
-        [filters]="filters"
-        [order]="order"
-        [loading]="loading"
-        [hasSearched]="hasSearched"
-        [comparisonSelection]="comparisonSelection"
+        [stations]="filteredStations()"
+        [filters]="filters()"
+        [order]="order()"
+        [loading]="loading()"
+        [hasSearched]="hasSearched()"
+        [comparisonSelection]="comparisonSelection()"
         (orderChanged)="onOrderChanged($event)"
         (toggleComparison)="onToggleComparison($event)"
         (routeSelected)="onRouteSelected($event)">
@@ -58,21 +58,21 @@
   </main>
 
   <app-comparador
-    [comparisonSelection]="comparisonSelection"
-    [filters]="filters"
+    [comparisonSelection]="comparisonSelection()"
+    [filters]="filters()"
     (remove)="onRemoveFromComparison($event)"
     (clear)="onClearComparison()">
   </app-comparador>
 
   <nav class="mobile-tabs">
-    <button class="mobile-tab" [class.mobile-tab--active]="mobileTab === 'list'" (click)="mobileTab = 'list'">
+    <button class="mobile-tab" [class.mobile-tab--active]="mobileTab() === 'list'" (click)="mobileTab.set('list')">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
         <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
         <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
       </svg>
       Lista
     </button>
-    <button class="mobile-tab" [class.mobile-tab--active]="mobileTab === 'map'" (click)="mobileTab = 'map'">
+    <button class="mobile-tab" [class.mobile-tab--active]="mobileTab() === 'map'" (click)="mobileTab.set('map')">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
         <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
         <line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/>
