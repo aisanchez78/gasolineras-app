@@ -3,16 +3,6 @@ import * as L from 'leaflet';
 import { Gasolinera, Coordenadas, FiltrosActivos } from '../../models/gasolinera.model';
 import { OsrmService } from '../../services/osrm.service';
 
-const iconGasolinera = L.icon({
-  iconUrl:       'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  shadowUrl:     'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-  iconSize:    [25, 41],
-  iconAnchor:  [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize:  [41, 41],
-});
-
 const iconUsuario = L.divIcon({
   className: '',
   html: `<div style="
@@ -24,6 +14,29 @@ const iconUsuario = L.divIcon({
   iconSize:   [18, 18],
   iconAnchor: [9, 9],
 });
+
+function crearIconoGasolinera(abierta: boolean, seleccionada: boolean): L.DivIcon {
+  const color  = seleccionada ? '#ff5f1f' : (abierta ? '#16a34a' : '#dc2626');
+  const shadow = seleccionada ? 'rgba(255,95,31,.5)' : (abierta ? 'rgba(34,197,94,.4)' : 'rgba(239,68,68,.35)');
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="40" viewBox="0 0 32 40">
+    <path d="M16 0C16 0 16 0 16 0L16 0C16 0 2 12 2 22c0 8 6.3 14 14 14s14-6 14-14C30 12 16 0 16 0z"
+      fill="${color}" stroke="white" stroke-width="2"/>
+    <g transform="translate(8,12) scale(0.7)">
+      <rect x="1" y="4" width="14" height="16" rx="2" fill="none" stroke="white" stroke-width="2"/>
+      <rect x="4" y="7" width="8" height="5" rx="1" fill="white" opacity=".6"/>
+      <path d="M17 8l3-3 0 12a2 2 0 0 1-4 0l0-4" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="18" cy="5" r="1.5" fill="white" opacity=".6"/>
+    </g>
+  </svg>`;
+
+  return L.divIcon({
+    className: 'gas-marker',
+    html: `<div style="filter:drop-shadow(0 2px 6px ${shadow});transform:translate(-50%,-100%);position:relative;">${svg}</div>`,
+    iconSize:   [0, 0],
+    iconAnchor: [0, 0],
+  });
+}
 
 @Component({
   selector: 'app-mapa',
@@ -44,6 +57,7 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() posicion: Coordenadas | null = null;
   @Input() filtros!: FiltrosActivos;
   @Input() gasolineraSeleccionada: Gasolinera | null = null;
+  @Input() seleccionadas: Gasolinera[] = [];
   @Input() theme: 'dark' | 'light' = 'dark';
 
   private map: L.Map | null = null;
@@ -70,7 +84,7 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges) {
     if (!this.listo) return;
-    if (changes['gasolineras'] || changes['posicion']) this.actualizarMarcadores();
+    if (changes['gasolineras'] || changes['posicion'] || changes['seleccionadas']) this.actualizarMarcadores();
     if (changes['gasolineraSeleccionada']) this.actualizarRuta();
   }
 
@@ -112,7 +126,8 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
           <small>📍 ${distancia} km por carretera</small>
         </div>`;
 
-      const marker = L.marker([lat, lng], { icon: iconGasolinera })
+      const isSel = this.seleccionadas.some(s => s.IDEESS === g.IDEESS);
+      const marker = L.marker([lat, lng], { icon: crearIconoGasolinera(g.abierta ?? false, isSel) })
         .addTo(this.map!)
         .bindPopup(popup);
 
