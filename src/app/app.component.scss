@@ -23,6 +23,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
+  justify-content: space-between;
 }
 
 .logo {
@@ -76,6 +77,25 @@
 .mapa-wrap { display: block; margin-bottom: 1.5rem; }
 
 .has-comparador .app-main { padding-bottom: 5rem; }
+
+.theme-toggle {
+  margin-left: auto;
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  border: 1px solid var(--border-light);
+  background: var(--surface);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: all .15s;
+
+  &:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(255,95,31,0.08);
+  }
+}
 
 @media (max-width: 960px) {
   .app-main { grid-template-columns: 1fr; padding: 1rem; }
