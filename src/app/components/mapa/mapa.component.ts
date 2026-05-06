@@ -1,7 +1,9 @@
-import { Component, Input, OnChanges, OnDestroy, ElementRef, AfterViewInit, inject, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, ElementRef, AfterViewInit, inject, SimpleChanges } from '@angular/core';
 import * as L from 'leaflet';
 import { Gasolinera, Coordenadas, FiltrosActivos } from '../../models/gasolinera.model';
 import { OsrmService } from '../../services/osrm.service';
+
+const BTN_STYLE = 'padding:.35rem .7rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);color:#f0ede8;border-radius:8px;font-family:sans-serif;font-size:.75rem;cursor:pointer;white-space:nowrap;';
 
 const iconGasolinera = L.icon({
   iconUrl:       'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
@@ -44,13 +46,18 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() posicion: Coordenadas | null = null;
   @Input() filtros!: FiltrosActivos;
   @Input() gasolineraSeleccionada: Gasolinera | null = null;
+  @Input() seleccionadas: Gasolinera[] = [];
+  @Output() toggleComparacion = new EventEmitter<Gasolinera>();
 
   private map: L.Map | null = null;
   private markers: L.Marker[] = [];
+  private markerGasolineraMap = new Map<L.Marker, Gasolinera>();
   private markerUsuario: L.Marker | null = null;
   private listo = false;
   private rutaLayer: L.GeoJSON | null = null;
   private panelRuta: L.Control | null = null;
+  // Gasolinera activada desde el popup del mapa (tiene prioridad sobre el @Input de la tarjeta)
+  private gasolineraActivaEnMapa: Gasolinera | null = null;
 
   private osrm = inject(OsrmService);
 
@@ -70,7 +77,11 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
   ngOnChanges(changes: SimpleChanges) {
     if (!this.listo) return;
     if (changes['gasolineras'] || changes['posicion']) this.actualizarMarcadores();
-    if (changes['gasolineraSeleccionada']) this.actualizarRuta();
+    if (changes['gasolineraSeleccionada']) {
+      this.gasolineraActivaEnMapa = null; // la tarjeta toma el control
+      this.actualizarRuta();
+    }
+    if (changes['seleccionadas']) this.refrescarPopupAbierto();
   }
 
   ngOnDestroy() {
@@ -81,6 +92,7 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
     if (!this.map) return;
     this.markers.forEach(m => m.remove());
     this.markers = [];
+    this.markerGasolineraMap.clear();
     this.markerUsuario?.remove();
 
     if (!this.posicion) return;
@@ -96,26 +108,52 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
       const lng = parseFloat((g['Longitud (WGS84)'] ?? g.Longitud ?? '0').replace(',', '.'));
       if (!lat || !lng) continue;
 
-      const precio    = this.precioDestacado(g);
-      const distancia = g.distancia?.toFixed(1) ?? '?';
+      const precio     = this.precioDestacado(g);
+      const distancia  = g.distancia?.toFixed(1) ?? '?';
       const estadoHtml = g.abierta
         ? '<span style="color:#86efac">● Abierta</span>'
         : '<span style="color:#fca5a5">● Cerrada</span>';
 
       const popup = `
-        <div style="font-family:sans-serif;min-width:160px">
+        <div style="font-family:sans-serif;min-width:170px">
           <strong style="font-size:.9rem">${g['Rótulo'] || 'Sin nombre'}</strong><br>
           <small style="color:#888">${g['Dirección']}, ${g.Municipio}</small><br><br>
           ${estadoHtml}<br>
           <span style="font-size:1.1rem;font-weight:700">${precio} €/L</span><br>
           <small>📍 ${distancia} km por carretera</small>
+          <div style="display:flex;gap:.4rem;margin-top:.6rem">
+            <button data-accion="ruta" style="${BTN_STYLE}">🚗 Ver ruta</button>
+            <button data-accion="comparar" style="${BTN_STYLE}">+ Comparar</button>
+          </div>
         </div>`;
 
       const marker = L.marker([lat, lng], { icon: iconGasolinera })
         .addTo(this.map!)
         .bindPopup(popup);
 
+      marker.on('popupopen', () => {
+        const popupEl = marker.getPopup()?.getElement();
+        if (!popupEl) return;
+
+        // Botón ruta
+        const btnRuta = popupEl.querySelector<HTMLElement>('[data-accion="ruta"]');
+        if (btnRuta) {
+          L.DomEvent.on(btnRuta, 'click', () => {
+            this.gasolineraActivaEnMapa = g;
+            this.actualizarRuta();
+          });
+        }
+
+        // Botón comparar — inicializa estado y adjunta handler
+        const btnComparar = popupEl.querySelector<HTMLButtonElement>('[data-accion="comparar"]');
+        if (btnComparar) {
+          this.aplicarEstadoComparar(btnComparar, g);
+          L.DomEvent.on(btnComparar, 'click', () => this.toggleComparacion.emit(g));
+        }
+      });
+
       this.markers.push(marker);
+      this.markerGasolineraMap.set(marker, g);
       bounds.push([lat, lng]);
     }
 
@@ -126,12 +164,42 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
     }
   }
 
+  // Actualiza el botón comparar del popup actualmente abierto cuando cambia seleccionadas
+  private refrescarPopupAbierto() {
+    for (const [marker, g] of this.markerGasolineraMap) {
+      if (marker.isPopupOpen()) {
+        const btn = marker.getPopup()?.getElement()
+          ?.querySelector<HTMLButtonElement>('[data-accion="comparar"]');
+        if (btn) this.aplicarEstadoComparar(btn, g);
+        break;
+      }
+    }
+  }
+
+  private aplicarEstadoComparar(btn: HTMLButtonElement, g: Gasolinera) {
+    const seleccionada = this.seleccionadas.some(s => s.IDEESS === g.IDEESS);
+    const llena = this.seleccionadas.length >= 3 && !seleccionada;
+    btn.textContent = seleccionada ? '✓ Comparando' : '+ Comparar';
+    btn.disabled = llena;
+    btn.style.opacity = llena ? '0.4' : '1';
+    btn.style.cursor  = llena ? 'not-allowed' : 'pointer';
+    if (seleccionada) {
+      btn.style.background    = 'rgba(255,95,31,0.25)';
+      btn.style.borderColor   = 'rgba(255,95,31,0.6)';
+      btn.style.color         = '#ff9500';
+    } else {
+      btn.style.background    = 'rgba(255,255,255,.08)';
+      btn.style.borderColor   = 'rgba(255,255,255,.2)';
+      btn.style.color         = '#f0ede8';
+    }
+  }
+
   private actualizarRuta() {
     this.rutaLayer?.remove();
     this.rutaLayer = null;
     if (this.panelRuta) { this.map?.removeControl(this.panelRuta); this.panelRuta = null; }
 
-    const g = this.gasolineraSeleccionada;
+    const g = this.gasolineraActivaEnMapa ?? this.gasolineraSeleccionada;
     if (!g || !this.posicion || !this.map) return;
 
     const destino: Coordenadas = {
@@ -146,7 +214,7 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
         style: { color: '#ff5f1f', weight: 5, opacity: 0.8 },
       }).addTo(this.map);
 
-      const km = (ruta.distanciaMetros / 1000).toFixed(1);
+      const km  = (ruta.distanciaMetros / 1000).toFixed(1);
       const min = Math.round(ruta.duracionSegundos / 60);
 
       const InfoControl = L.Control.extend({
@@ -159,9 +227,7 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
       });
       this.panelRuta = new (InfoControl as any)({ position: 'topright' });
       this.panelRuta!.addTo(this.map);
-
-      const bounds = this.rutaLayer!.getBounds();
-      this.map.fitBounds(bounds, { padding: [40, 40] });
+      this.map.fitBounds(this.rutaLayer!.getBounds(), { padding: [40, 40] });
     });
   }
 
