@@ -1,53 +1,65 @@
-<article class="tarjeta" [class.tarjeta--barata]="esMasBarata" [class.tarjeta--seleccionada]="enComparacion">
+<article class="tarjeta" [class.tarjeta--barata]="esMasBarata" [class.tarjeta--sel]="enComparacion">
   @if (esMasBarata) {
-    <div class="badge-barata">🏆 Más barata</div>
+    <div class="badge-best">Más barata</div>
   }
 
-  <div class="tarjeta-header">
-    <div class="rotulo">{{ gasolinera['Rótulo'] || 'Sin nombre' }}</div>
-    <div class="estado" [class.estado--abierta]="gasolinera.abierta" [class.estado--cerrada]="!gasolinera.abierta">
+  <div class="tarjeta-head">
+    <span class="rotulo">{{ gasolinera['Rótulo'] || 'Sin nombre' }}</span>
+    <span class="estado" [class.estado--on]="gasolinera.abierta" [class.estado--off]="!gasolinera.abierta">
       {{ gasolinera.abierta ? 'Abierta' : 'Cerrada' }}
-    </div>
+    </span>
   </div>
 
   <p class="direccion">{{ gasolinera['Dirección'] }}, {{ gasolinera.Municipio }}</p>
 
-  <div class="precio-grande">
+  <div class="precio-hero">
     {{ precioDestacado }} <span class="euro">€/L</span>
   </div>
 
-  <div class="precios-grid">
-    <div class="precio-item">
-      <span class="precio-tipo">G95</span>
-      <span class="precio-val">{{ gasolinera['Precio Gasolina 95 E5'] || '—' }}</span>
+  <div class="precios-mini">
+    <div class="pm-item">
+      <span class="pm-label">G95</span>
+      <span class="pm-val">{{ gasolinera['Precio Gasolina 95 E5'] || '—' }}</span>
     </div>
-    <div class="precio-item">
-      <span class="precio-tipo">Gasoil</span>
-      <span class="precio-val">{{ gasolinera['Precio Gasoleo A'] || '—' }}</span>
+    <div class="pm-item">
+      <span class="pm-label">Gasóleo</span>
+      <span class="pm-val">{{ gasolinera['Precio Gasoleo A'] || '—' }}</span>
     </div>
-    <div class="precio-item">
-      <span class="precio-tipo">G98</span>
-      <span class="precio-val">{{ gasolinera['Precio Gasolina 98 E5'] || '—' }}</span>
+    <div class="pm-item">
+      <span class="pm-label">G98</span>
+      <span class="pm-val">{{ gasolinera['Precio Gasolina 98 E5'] || '—' }}</span>
     </div>
-    <div class="precio-item">
-      <span class="precio-tipo">Gasoil P.</span>
-      <span class="precio-val">{{ gasolinera['Precio Gasoil Premium'] || '—' }}</span>
+    <div class="pm-item">
+      <span class="pm-label">Gasóleo P.</span>
+      <span class="pm-val">{{ gasolinera['Precio Gasoil Premium'] || '—' }}</span>
     </div>
   </div>
 
-  <div class="tarjeta-footer">
-    <span class="distancia">📍 {{ gasolinera.distancia?.toFixed(1) }} km</span>
-    <div class="footer-acciones">
-      <button class="btn-ruta" (click)="seleccionarRuta.emit()" title="Ver ruta en mapa">🚗 Ruta</button>
-      <button
-        class="btn-comparar"
-        [class.btn-comparar--activo]="enComparacion"
-        [disabled]="comparacionLlena && !enComparacion"
-        (click)="toggleComparacion.emit()"
-        [title]="enComparacion ? 'Quitar de comparación' : 'Añadir a comparación'">
-        {{ enComparacion ? '✓ Comparando' : '+ Comparar' }}
+  <div class="tarjeta-foot">
+    <span class="distancia">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+      </svg>
+      {{ gasolinera.distancia?.toFixed(1) }} km
+    </span>
+    <div class="foot-actions">
+      <button class="btn-sm" (click)="seleccionarRuta.emit()" title="Ver ruta">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+        Ruta
       </button>
-      <button class="btn-maps" (click)="abrirEnMaps()">Maps →</button>
+      <button class="btn-sm" [class.btn-sm--active]="enComparacion"
+        [disabled]="comparacionLlena && !enComparacion"
+        (click)="toggleComparacion.emit()">
+        {{ enComparacion ? '✓' : '+' }} Comparar
+      </button>
+      <button class="btn-sm btn-sm--icon" (click)="abrirEnMaps()" title="Google Maps">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+          <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+        </svg>
+      </button>
     </div>
   </div>
 </article>
