@@ -30,6 +30,12 @@
   strong { color: var(--accent-2); font-weight: 700; }
 }
 
+.fieldset-chips {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
 .chips-row { display: flex; flex-wrap: wrap; gap: .4rem; }
 
 .chip {

@@ -2,17 +2,20 @@
   <h3 class="filtros-titulo">Filtros</h3>
 
   <div class="filtro-grupo">
-    <label class="filtro-label">Tipo de carburante</label>
-    <div class="chips-row">
-      @for (tipo of fuelTypes; track tipo.value) {
-        <button
-          class="chip"
-          [class.chip--active]="fuelType === tipo.value"
-          (click)="fuelType = tipo.value; emit()">
-          {{ tipo.label }}
-        </button>
-      }
-    </div>
+    <fieldset class="fieldset-chips">
+      <legend class="filtro-label">Tipo de carburante</legend>
+      <div class="chips-row">
+        @for (tipo of fuelTypes; track tipo.value) {
+          <button
+            class="chip"
+            [class.chip--active]="fuelType === tipo.value"
+            [attr.aria-pressed]="fuelType === tipo.value"
+            (click)="fuelType = tipo.value; emit()">
+            {{ tipo.label }}
+          </button>
+        }
+      </div>
+    </fieldset>
   </div>
 
   <div class="filtro-grupo">
@@ -34,6 +37,7 @@
         <button
           class="marca-chip"
           [class.marca-chip--active]="isBrandSelected(brand)"
+          [attr.aria-pressed]="isBrandSelected(brand)"
           (click)="toggleBrand(brand)">
           {{ brand }}
         </button>

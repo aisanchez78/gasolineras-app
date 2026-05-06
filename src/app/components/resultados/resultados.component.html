@@ -24,6 +24,7 @@
             <button
               class="orden-chip"
               [class.orden-chip--active]="order === op.value"
+              [attr.aria-pressed]="order === op.value"
               (click)="orderChanged.emit(op.value)">
               {{ op.icon }} {{ op.label }}
             </button>
