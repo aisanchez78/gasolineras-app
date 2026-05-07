@@ -25,7 +25,7 @@ export class AppComponent {
   readonly hasSearched    = signal(false);
   readonly comparisonSelection = signal<Gasolinera[]>([]);
   readonly routeTarget    = signal<Gasolinera | null>(null);
-  readonly mobileTab      = signal<'list' | 'map'>('list');
+  readonly mobileTab      = signal<'search' | 'list' | 'map'>('search');
   readonly theme          = signal<'dark' | 'light'>('dark');
 
   private allStations        = signal<GasolineraAPI[]>([]);
@@ -39,7 +39,12 @@ export class AppComponent {
     document.documentElement.setAttribute('data-theme', this.theme());
   }
 
-  onLocationDetected(pos: Coordinates) { this.userLocation.set(pos); this.search(); }
+  onLocationDetected(pos: Coordinates) {
+    this.userLocation.set(pos);
+    this.search();
+    // On mobile, switch to results list after triggering a search
+    if (window.innerWidth <= 768) this.mobileTab.set('list');
+  }
 
   onFiltersChanged(f: ActiveFilters) { this.filters.set(f); if (this.userLocation()) this.applyFilters(); }
 
