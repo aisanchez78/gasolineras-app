@@ -102,3 +102,19 @@
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+@media (max-width: 768px) {
+  .resultados-section { padding-top: 0; }
+
+  .resultados-header {
+    padding: .75rem 1rem .5rem;
+    flex-wrap: wrap;
+    gap: .5rem;
+  }
+
+  .resultados-titulo { font-size: 1rem; }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}

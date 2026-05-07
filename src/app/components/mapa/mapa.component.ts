@@ -48,12 +48,21 @@ function crearIconoGasolinera(isOpen: boolean, selected: boolean): L.DivIcon {
   standalone: true,
   template: '<div class="mapa-container" #mapaEl></div>',
   styles: [`
+    :host { display: block; }
     .mapa-container {
       width: 100%;
       height: 420px;
       border-radius: 20px;
       overflow: hidden;
       border: 1px solid rgba(255,255,255,0.09);
+    }
+    @media (max-width: 768px) {
+      :host { height: 100%; }
+      .mapa-container {
+        height: 100%;
+        border-radius: 0;
+        border: none;
+      }
     }
   `],
 })
@@ -191,7 +200,8 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
     }
 
     if (bounds.length > 1) {
-      this.map.fitBounds(bounds, { padding: [40, 40] });
+      const pad: [number, number] = window.innerWidth <= 768 ? [20, 20] : [40, 40];
+      this.map.fitBounds(bounds, { padding: pad });
     } else {
       this.map.setView([this.location.lat, this.location.lng], 13);
     }
@@ -229,7 +239,8 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
       this.panelRuta!.addTo(this.map);
 
       const bounds = this.rutaLayer!.getBounds();
-      this.map.fitBounds(bounds, { padding: [40, 40] });
+      const pad: [number, number] = window.innerWidth <= 768 ? [20, 20] : [40, 40];
+      this.map.fitBounds(bounds, { padding: pad });
     });
   }
 }

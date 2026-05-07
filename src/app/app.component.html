@@ -25,7 +25,7 @@
     </div>
   </header>
 
-  <main class="app-main">
+  <main class="app-main" [attr.data-tab]="mobileTab()">
     <aside class="sidebar" [class.mobile-visible]="mobileTab() === 'search'">
       <app-buscador (locationDetected)="onLocationDetected($event)" />
       <app-filtros (filtersChanged)="onFiltersChanged($event)" />
