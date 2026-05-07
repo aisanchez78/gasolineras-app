@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Coordinates } from '../models/gasolinera.model';
 import { map } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class GeoService {
@@ -35,7 +36,7 @@ export class GeoService {
 
   private getLocationByIp(): Observable<Coordinates> {
     return new Observable(observer => {
-      this.http.get<any>('https://ipapi.co/json/').subscribe({
+      this.http.get<any>(environment.ipApiUrl).subscribe({
         next: data => {
           if (data?.latitude && data?.longitude) {
             console.log('Ubicación por IP:', data.city, data.latitude, data.longitude);
@@ -47,7 +48,7 @@ export class GeoService {
         },
         error: () => {
           // Segundo fallback: ip-api.com
-          this.http.get<any>('http://ip-api.com/json').subscribe({
+          this.http.get<any>(environment.ipApiFallbackUrl).subscribe({
             next: data => {
               if (data?.lat && data?.lon) {
                 console.log('Ubicación por ip-api:', data.city, data.lat, data.lon);
@@ -80,7 +81,7 @@ export class GeoService {
   }
 
   geocodeAddress(address: string): Observable<Coordinates & { locationName: string }> {
-    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&countrycodes=es&limit=1`;
+    const url = `${environment.nominatimUrl}?format=json&q=${encodeURIComponent(address)}&countrycodes=es&limit=1`;
     return this.http.get<any[]>(url).pipe(
       map(results => {
         if (!results || results.length === 0) {

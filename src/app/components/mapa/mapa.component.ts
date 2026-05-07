@@ -2,10 +2,11 @@ import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, ElementRe
 import * as L from 'leaflet';
 import { Gasolinera, Coordinates, ActiveFilters, FuelType } from '../../models/gasolinera.model';
 import { OsrmService } from '../../services/osrm.service';
+import { environment } from '../../../environments/environment';
 
-const TILE_DARK  = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-const TILE_LIGHT = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
-const TILE_ATTR  = '© <a href="https://www.openstreetmap.org/copyright">OSM</a> © <a href="https://carto.com/">CARTO</a>';
+const TILE_DARK  = environment.tileUrlDark;
+const TILE_LIGHT = environment.tileUrlLight;
+const TILE_ATTR  = environment.tileAttribution;
 
 const iconUsuario = L.divIcon({
   className: '',
