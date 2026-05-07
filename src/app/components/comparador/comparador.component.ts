@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Gasolinera, ActiveFilters } from '../../models/gasolinera.model';
+import { Gasolinera, ActiveFilters, FuelType, FUEL_LABELS } from '../../models/gasolinera.model';
 
 type PriceField = 'Precio Gasolina 95 E5' | 'Precio Gasoleo A' | 'Precio Gasolina 98 E5' | 'Precio Gasoil Premium';
 
@@ -55,9 +55,6 @@ export class ComparadorComponent implements OnChanges {
   }
 
   fuelLabel(): string {
-    const map: Record<string, string> = {
-      gasolina95: 'G95', gasoil: 'Gasóleo A', gasolina98: 'G98', gasoilPremium: 'Gasoil P.',
-    };
-    return map[this.filters?.fuelType] ?? '';
+    return FUEL_LABELS[this.filters?.fuelType as FuelType] ?? this.filters?.fuelType;
   }
 }

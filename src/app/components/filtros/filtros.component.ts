@@ -1,7 +1,7 @@
 import { Component, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActiveFilters } from '../../models/gasolinera.model';
+import { FuelType, FUEL_LABELS, ActiveFilters } from '../../models/gasolinera.model';
 
 @Component({
   selector: 'app-filtros',
@@ -13,7 +13,7 @@ import { ActiveFilters } from '../../models/gasolinera.model';
 export class FiltrosComponent implements OnInit {
   @Output() filtersChanged = new EventEmitter<ActiveFilters>();
 
-  fuelType: ActiveFilters['fuelType'] = 'gasolina95';
+  fuelType: FuelType = 'gasolina95';
   radiusKm = 10;
   selectedBrands: string[] = [];
 
@@ -22,12 +22,10 @@ export class FiltrosComponent implements OnInit {
     'ESSO', 'BALLENOIL', 'PLENOIL', 'CARREFOUR'
   ];
 
-  fuelTypes: { value: ActiveFilters['fuelType']; label: string }[] = [
-    { value: 'gasolina95',    label: 'Gasolina 95' },
-    { value: 'gasoil',        label: 'Gasoil A' },
-    { value: 'gasolina98',    label: 'Gasolina 98' },
-    { value: 'gasoilPremium', label: 'Gasoil Premium' },
-  ];
+  readonly fuelTypes = (Object.keys(FUEL_LABELS) as FuelType[]).map(value => ({
+    value,
+    label: FUEL_LABELS[value],
+  }));
 
   ngOnInit() { this.emit(); }
 
