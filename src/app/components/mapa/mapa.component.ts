@@ -127,13 +127,15 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
       const lng = g.lng;
       if (!lat || !lng) continue;
 
-      const price    = g.prices[this.filters?.fuelType as FuelType] || '—';
+      const priceRaw = g.prices[this.filters?.fuelType as FuelType] || '—';
+      const price    = priceRaw !== '—' ? priceRaw.replace('.', ',') : '—';
       const distance = g.distance.toFixed(1);
 
       const dark     = this.theme === 'dark';
       const popBg    = dark ? '#1a1a22'                : '#ffffff';
       const popText  = dark ? '#f0ede8'                : '#1a1a1a';
       const popSub   = dark ? 'rgba(255,255,255,.55)'  : 'rgba(0,0,0,.5)';
+      const popShadow = dark ? '0 8px 32px rgba(0,0,0,.5)' : '0 8px 32px rgba(0,0,0,.15)';
       const btnBg    = dark ? 'rgba(255,255,255,.08)'  : 'rgba(0,0,0,.06)';
       const btnBdr   = dark ? 'rgba(255,255,255,.15)'  : 'rgba(0,0,0,.12)';
       const btnClr   = dark ? '#f0ede8'                : '#333';
@@ -145,15 +147,15 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
         ? `<span style="color:${dark ? '#22c55e' : '#16a34a'}">● Abierta</span>`
         : `<span style="color:${dark ? '#ef4444' : '#dc2626'}">● Cerrada</span>`;
 
-      const BTN = `padding:5px 10px;border-radius:7px;font-family:'DM Sans',system-ui;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;`;
+      const BTN = `padding:6px 14px;border-radius:20px;font-family:'DM Sans',system-ui;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;`;
 
-      const popup = `<div style="font-family:'DM Sans',system-ui;min-width:180px;font-size:13px;color:${popText};background:${popBg};margin:-13px -20px;padding:14px 16px;border-radius:12px;">
-  <strong style="font-family:'Syne',sans-serif;font-size:14px;color:${popText}">${g.name}</strong><br>
+      const popup = `<div style="font-family:'DM Sans',system-ui;min-width:190px;font-size:13px;color:${popText};background:${popBg};margin:-13px -20px;padding:16px 18px;border-radius:14px;box-shadow:${popShadow};">
+  <strong style="font-family:'Syne',sans-serif;font-size:15px;color:${popText}">${g.name}</strong><br>
   <small style="color:${popSub}">${g.address}, ${g.city}</small><br>
-  <div style="margin:6px 0 2px">${statusHtml}</div>
-  <div style="font-size:20px;font-weight:800;margin:4px 0;color:${popText}">${price} <span style="font-size:12px;font-weight:400;color:${popSub}">€/L</span></div>
+  <div style="margin:7px 0 2px">${statusHtml}</div>
+  <div style="font-size:22px;font-weight:800;margin:4px 0;color:${popText}">${price} <span style="font-size:13px;font-weight:400;color:${popSub}">€/L</span></div>
   <small style="color:${popSub}">📍 ${distance} km</small>
-  <div style="display:flex;gap:5px;margin-top:10px">
+  <div style="display:flex;gap:6px;margin-top:12px">
     <button data-accion="ruta" style="${BTN}background:${btnAccBg};border:1px solid ${btnAccBdr};color:${btnAccClr};">🚗 Ruta</button>
     <button data-accion="comparar" style="${BTN}background:${btnBg};border:1px solid ${btnBdr};color:${btnClr};">+ Comparar</button>
     <button data-accion="maps" style="${BTN}background:${btnBg};border:1px solid ${btnBdr};color:${btnClr};">Maps ↗</button>
@@ -163,7 +165,7 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
       const isSel = this.comparisonSelection.some(s => s.id === g.id);
       const marker = L.marker([lat, lng], { icon: crearIconoGasolinera(g.isOpen, isSel) })
         .addTo(this.map!)
-        .bindPopup(popup);
+        .bindPopup(popup, { className: 'gasolinapp-popup' });
 
       marker.on('popupopen', () => {
         const el = marker.getPopup()?.getElement();
