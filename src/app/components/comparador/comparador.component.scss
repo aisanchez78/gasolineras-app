@@ -31,12 +31,12 @@
   border-radius: 20px;
   font-size: .75rem;
   font-weight: 600;
-  color: var(--accent-2);
+  color: var(--accent-2-text);
   white-space: nowrap;
 }
 
 .chip-remove {
-  background: none; border: none; color: var(--accent-2);
+  background: none; border: none; color: var(--accent-2-text);
   cursor: pointer; font-size: .65rem; padding: 0; opacity: .6;
   &:hover { opacity: 1; }
 }
@@ -100,17 +100,17 @@
 
 .fila-label { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text-hint); white-space: nowrap; }
 .fila-dir { font-size: .75rem; color: var(--text-secondary); font-weight: 300; line-height: 1.4; }
-.fila-destacada { background: rgba(255,95,31,0.04); .fila-label { color: var(--accent-2); } }
+.fila-destacada { background: rgba(255,95,31,0.04); .fila-label { color: var(--accent-2-text); } }
 
-td.mejor { color: var(--green); font-weight: 700; .unidad { color: var(--green); opacity: .7; } }
+td.mejor { color: var(--green-text); font-weight: 700; .unidad { color: var(--green-text); opacity: .7; } }
 td.sin-precio { color: var(--text-hint); }
 .unidad { font-size: .7rem; font-weight: 400; color: var(--text-secondary); margin-left: .2rem; }
 
 .estado {
   font-size: .65rem; font-weight: 700; padding: .2rem .6rem;
   border-radius: 6px; text-transform: uppercase; letter-spacing: .06em;
-  &--abierta { background: var(--green-bg); color: var(--green); }
-  &--cerrada  { background: var(--red-bg);   color: var(--red);   }
+  &--abierta { background: var(--green-bg); color: var(--green-text); }
+  &--cerrada  { background: var(--red-bg);   color: var(--red-text);  }
 }
 
 @media (max-width: 960px) {

@@ -71,8 +71,8 @@
   text-transform: uppercase; letter-spacing: .06em;
   flex-shrink: 0;
 
-  &--on  { background: var(--green-bg); color: var(--green); }
-  &--off { background: var(--red-bg);   color: var(--red);   }
+  &--on  { background: var(--green-bg); color: var(--green-text); }
+  &--off { background: var(--red-bg);   color: var(--red-text);   }
 }
 
 .direccion {
@@ -146,13 +146,13 @@
   &:hover:not(:disabled) {
     background: rgba(255,95,31,0.08);
     border-color: rgba(255,95,31,0.4);
-    color: var(--accent-2);
+    color: var(--accent-2-text);
   }
 
   &--active {
     background: rgba(255,95,31,0.12);
     border-color: rgba(255,95,31,0.4);
-    color: var(--accent-2); font-weight: 700;
+    color: var(--accent-2-text); font-weight: 700;
   }
 
   &--icon { padding: .38rem .5rem; }

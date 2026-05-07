@@ -156,11 +156,11 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
       const btnClr   = dark ? '#f0ede8'                : '#333';
       const btnAccBg  = dark ? 'rgba(255,95,31,.15)'   : 'rgba(255,95,31,.1)';
       const btnAccBdr = dark ? 'rgba(255,95,31,.4)'    : 'rgba(255,95,31,.35)';
-      const btnAccClr = dark ? '#ff9500'               : '#d94800';
+      const btnAccClr = dark ? '#ff9500'  : '#a35a00'; /* --accent-2-text in light */
 
       const statusHtml = g.isOpen
-        ? `<span style="color:${dark ? '#22c55e' : '#16a34a'}">● Abierta</span>`
-        : `<span style="color:${dark ? '#ef4444' : '#dc2626'}">● Cerrada</span>`;
+        ? `<span style="color:${dark ? '#22c55e' : '#0a6e30'}">● Abierta</span>` /* --green-text */
+        : `<span style="color:${dark ? '#ef4444' : '#b91c1c'}">● Cerrada</span>`; /* --red-text */
 
       const BTN = `padding:6px 14px;border-radius:20px;font-family:'DM Sans',system-ui;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;`;
 
