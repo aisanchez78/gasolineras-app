@@ -20,18 +20,10 @@ export class TarjetaGasolineraComponent {
   @Output() routeSelected = new EventEmitter<void>();
 
   get highlightedPrice(): string {
-    const prices: Record<string, string> = {
-      gasolina95:    this.station['Precio Gasolina 95 E5'],
-      gasoil:        this.station['Precio Gasoleo A'],
-      gasolina98:    this.station['Precio Gasolina 98 E5'],
-      gasoilPremium: this.station['Precio Gasoil Premium'],
-    };
-    return prices[this.filters?.fuelType] || '—';
+    return this.station.prices[this.filters?.fuelType] || '—';
   }
 
   openInMaps() {
-    const lat = this.station.Latitud?.replace(',', '.') ?? '0';
-    const lng = (this.station['Longitud (WGS84)'] ?? this.station.Longitud ?? '0').replace(',', '.');
-    window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank');
+    window.open(`https://www.google.com/maps?q=${this.station.lat},${this.station.lng}`, '_blank');
   }
 }
