@@ -1,12 +1,13 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TarjetaGasolineraComponent } from '../tarjeta-gasolinera/tarjeta-gasolinera.component';
+import { ChipButtonComponent } from '../shared/chip-button/chip-button.component';
 import { Gasolinera, ActiveFilters, SortOrder } from '../../models/gasolinera.model';
 
 @Component({
   selector: 'app-resultados',
   standalone: true,
-  imports: [CommonModule, TarjetaGasolineraComponent],
+  imports: [CommonModule, TarjetaGasolineraComponent, ChipButtonComponent],
   templateUrl: './resultados.component.html',
   styleUrl: './resultados.component.scss'
 })

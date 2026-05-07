@@ -5,9 +5,7 @@
 
   <div class="tarjeta-head">
     <span class="rotulo">{{ station['Rótulo'] || 'Sin nombre' }}</span>
-    <span class="estado" [class.estado--on]="station.isOpen" [class.estado--off]="!station.isOpen">
-      {{ station.isOpen ? 'Abierta' : 'Cerrada' }}
-    </span>
+    <app-status-badge [open]="station.isOpen ?? false" />
   </div>
 
   <p class="direccion">{{ station['Dirección'] }}, {{ station.Municipio }}</p>

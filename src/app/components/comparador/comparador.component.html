@@ -41,9 +41,7 @@
               <td class="fila-label">Estado</td>
               @for (g of comparisonSelection; track g.IDEESS) {
                 <td>
-                  <span class="estado" [class.estado--abierta]="g.isOpen" [class.estado--cerrada]="!g.isOpen">
-                    {{ g.isOpen ? 'Abierta' : 'Cerrada' }}
-                  </span>
+                  <app-status-badge [open]="g.isOpen ?? false" />
                 </td>
               }
             </tr>
