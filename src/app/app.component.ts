@@ -35,15 +35,60 @@ export class AppComponent {
   );
 
   toggleTheme() {
-    this.theme.update(t => t === 'dark' ? 'light' : 'dark');
-    document.documentElement.setAttribute('data-theme', this.theme());
+    const apply = () => {
+      this.theme.update(t => t === 'dark' ? 'light' : 'dark');
+      document.documentElement.setAttribute('data-theme', this.theme());
+    };
+
+    if (!this.vtSupported()) { apply(); return; }
+
+    const vt = (document as any).startViewTransition(async () => {
+      apply();
+      await this.vtFlush();
+    });
+
+    // Circular reveal expanding from the toggle button (top-right corner)
+    vt.ready.then(() => {
+      document.documentElement.animate(
+        { clipPath: ['circle(0% at calc(100% - 3rem) 3rem)', 'circle(150% at calc(100% - 3rem) 3rem)'] },
+        { pseudoElement: '::view-transition-new(root)', duration: 500, easing: 'ease-in-out' }
+      );
+    });
+  }
+
+  /** Tab navigation with directional slide on mobile. Falls back to instant switch on desktop / unsupported browsers. */
+  setMobileTab(tab: 'search' | 'list' | 'map') {
+    if (!this.vtSupported() || window.innerWidth > 768) {
+      this.mobileTab.set(tab);
+      return;
+    }
+
+    const order: Record<'search' | 'list' | 'map', number> = { search: 0, list: 1, map: 2 };
+    const dir = order[tab] >= order[this.mobileTab()] ? 'forward' : 'back';
+    document.documentElement.setAttribute('data-vt-dir', dir);
+
+    (document as any).startViewTransition(async () => {
+      this.mobileTab.set(tab);
+      await this.vtFlush();
+    }).finished.then(() => {
+      document.documentElement.removeAttribute('data-vt-dir');
+    });
   }
 
   onLocationDetected(pos: Coordinates) {
     this.userLocation.set(pos);
     this.search();
-    // On mobile, switch to results list after triggering a search
-    if (window.innerWidth <= 768) this.mobileTab.set('list');
+    if (window.innerWidth <= 768) this.setMobileTab('list');
+  }
+
+  private vtSupported(): boolean {
+    return 'startViewTransition' in document
+      && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  /** Yields one microtask so Angular's signal scheduler can flush DOM updates. */
+  private vtFlush(): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, 0));
   }
 
   onFiltersChanged(f: ActiveFilters) { this.filters.set(f); if (this.userLocation()) this.applyFilters(); }
