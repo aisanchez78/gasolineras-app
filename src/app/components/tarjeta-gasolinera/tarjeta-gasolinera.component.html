@@ -4,11 +4,11 @@
   }
 
   <div class="tarjeta-head">
-    <span class="rotulo">{{ station['Rótulo'] || 'Sin nombre' }}</span>
-    <app-status-badge [open]="station.isOpen ?? false" />
+    <span class="rotulo">{{ station.name }}</span>
+    <app-status-badge [open]="station.isOpen" />
   </div>
 
-  <p class="direccion">{{ station['Dirección'] }}, {{ station.Municipio }}</p>
+  <p class="direccion">{{ station.address }}, {{ station.city }}</p>
 
   <div class="precio-hero">
     {{ highlightedPrice }} <span class="euro">€/L</span>
@@ -17,19 +17,19 @@
   <div class="precios-mini">
     <div class="pm-item">
       <span class="pm-label">G95</span>
-      <span class="pm-val">{{ station['Precio Gasolina 95 E5'] || '—' }}</span>
+      <span class="pm-val">{{ station.prices.gasolina95 || '—' }}</span>
     </div>
     <div class="pm-item">
       <span class="pm-label">Gasóleo</span>
-      <span class="pm-val">{{ station['Precio Gasoleo A'] || '—' }}</span>
+      <span class="pm-val">{{ station.prices.gasoil || '—' }}</span>
     </div>
     <div class="pm-item">
       <span class="pm-label">G98</span>
-      <span class="pm-val">{{ station['Precio Gasolina 98 E5'] || '—' }}</span>
+      <span class="pm-val">{{ station.prices.gasolina98 || '—' }}</span>
     </div>
     <div class="pm-item">
       <span class="pm-label">Gasóleo P.</span>
-      <span class="pm-val">{{ station['Precio Gasoil Premium'] || '—' }}</span>
+      <span class="pm-val">{{ station.prices.gasoilPremium || '—' }}</span>
     </div>
   </div>
 
@@ -38,7 +38,7 @@
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
       </svg>
-      {{ station.distance?.toFixed(1) }} km
+      {{ station.distance.toFixed(1) }} km
     </span>
     <div class="foot-actions">
       <button class="btn-sm" (click)="routeSelected.emit()" title="Ver ruta" aria-label="Ver ruta a esta gasolinera">

@@ -123,12 +123,12 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
     const bounds: [number, number][] = [[this.location.lat, this.location.lng]];
 
     for (const g of this.stations) {
-      const lat = parseFloat(g.Latitud?.replace(',', '.') ?? '0');
-      const lng = parseFloat((g['Longitud (WGS84)'] ?? g.Longitud ?? '0').replace(',', '.'));
+      const lat = g.lat;
+      const lng = g.lng;
       if (!lat || !lng) continue;
 
-      const price    = this.getHighlightedPrice(g);
-      const distance = g.distance?.toFixed(1) ?? '?';
+      const price    = g.prices[this.filters?.fuelType as FuelType] || '—';
+      const distance = g.distance.toFixed(1);
 
       const dark     = this.theme === 'dark';
       const popBg    = dark ? '#1a1a22'                : '#ffffff';
@@ -148,8 +148,8 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
       const BTN = `padding:5px 10px;border-radius:7px;font-family:'DM Sans',system-ui;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;`;
 
       const popup = `<div style="font-family:'DM Sans',system-ui;min-width:180px;font-size:13px;color:${popText};background:${popBg};margin:-13px -20px;padding:14px 16px;border-radius:12px;">
-  <strong style="font-family:'Syne',sans-serif;font-size:14px;color:${popText}">${g['Rótulo'] || 'Sin nombre'}</strong><br>
-  <small style="color:${popSub}">${g['Dirección']}, ${g.Municipio}</small><br>
+  <strong style="font-family:'Syne',sans-serif;font-size:14px;color:${popText}">${g.name}</strong><br>
+  <small style="color:${popSub}">${g.address}, ${g.city}</small><br>
   <div style="margin:6px 0 2px">${statusHtml}</div>
   <div style="font-size:20px;font-weight:800;margin:4px 0;color:${popText}">${price} <span style="font-size:12px;font-weight:400;color:${popSub}">€/L</span></div>
   <small style="color:${popSub}">📍 ${distance} km</small>
@@ -160,8 +160,8 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
   </div>
 </div>`;
 
-      const isSel = this.comparisonSelection.some(s => s.IDEESS === g.IDEESS);
-      const marker = L.marker([lat, lng], { icon: crearIconoGasolinera(g.isOpen ?? false, isSel) })
+      const isSel = this.comparisonSelection.some(s => s.id === g.id);
+      const marker = L.marker([lat, lng], { icon: crearIconoGasolinera(g.isOpen, isSel) })
         .addTo(this.map!)
         .bindPopup(popup);
 
@@ -174,9 +174,7 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
         if (btnRuta)     L.DomEvent.on(btnRuta,     'click', () => { this.activeMarkerStation = g; this.updateRoute(); });
         if (btnComparar) L.DomEvent.on(btnComparar, 'click', () => this.toggleComparison.emit(g));
         if (btnMaps)     L.DomEvent.on(btnMaps,     'click', () => {
-          const la = (g.Latitud || '0').replace(',', '.');
-          const lo = (g['Longitud (WGS84)'] || g.Longitud || '0').replace(',', '.');
-          window.open(`https://www.google.com/maps?q=${la},${lo}`, '_blank');
+          window.open(`https://www.google.com/maps?q=${g.lat},${g.lng}`, '_blank');
         });
       });
 
@@ -199,10 +197,7 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
     const g = this.activeMarkerStation ?? this.routeTarget;
     if (!g || !this.location || !this.map) return;
 
-    const destination: Coordinates = {
-      lat: parseFloat(g.Latitud?.replace(',', '.') ?? '0'),
-      lng: parseFloat((g['Longitud (WGS84)'] ?? g.Longitud ?? '0').replace(',', '.')),
-    };
+    const destination: Coordinates = { lat: g.lat, lng: g.lng };
 
     this.osrm.getRoute(this.location, destination).subscribe(route => {
       if (!route || !this.map) return;
@@ -228,15 +223,5 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
       const bounds = this.rutaLayer!.getBounds();
       this.map.fitBounds(bounds, { padding: [40, 40] });
     });
-  }
-
-  private getHighlightedPrice(g: Gasolinera): string {
-    const prices: Record<FuelType, string> = {
-      gasolina95:    g['Precio Gasolina 95 E5'],
-      gasoil:        g['Precio Gasoleo A'],
-      gasolina98:    g['Precio Gasolina 98 E5'],
-      gasoilPremium: g['Precio Gasoil Premium'],
-    };
-    return prices[this.filters?.fuelType] || '—';
   }
 }

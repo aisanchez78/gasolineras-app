@@ -2,9 +2,9 @@
   <div class="comparador">
     <div class="comparador-bar">
       <div class="bar-chips">
-        @for (g of comparisonSelection; track g.IDEESS) {
+        @for (g of comparisonSelection; track g.id) {
           <span class="chip">
-            {{ g['Rótulo'] }}
+            {{ g.name }}
             <button class="chip-remove" (click)="remove.emit(g)" aria-label="Quitar">✕</button>
           </span>
         }
@@ -26,10 +26,10 @@
           <thead>
             <tr>
               <th class="col-label"></th>
-              @for (g of comparisonSelection; track g.IDEESS) {
+              @for (g of comparisonSelection; track g.id) {
                 <th class="col-gasolinera">
                   <div class="col-header">
-                    <span class="col-rotulo">{{ g['Rótulo'] }}</span>
+                    <span class="col-rotulo">{{ g.name }}</span>
                     <button class="col-remove" (click)="remove.emit(g)" aria-label="Quitar">✕</button>
                   </div>
                 </th>
@@ -39,31 +39,31 @@
           <tbody>
             <tr>
               <td class="fila-label">Estado</td>
-              @for (g of comparisonSelection; track g.IDEESS) {
+              @for (g of comparisonSelection; track g.id) {
                 <td>
-                  <app-status-badge [open]="g.isOpen ?? false" />
+                  <app-status-badge [open]="g.isOpen" />
                 </td>
               }
             </tr>
             <tr>
               <td class="fila-label">Dirección</td>
-              @for (g of comparisonSelection; track g.IDEESS) {
-                <td class="fila-dir">{{ g['Dirección'] }}, {{ g.Municipio }}</td>
+              @for (g of comparisonSelection; track g.id) {
+                <td class="fila-dir">{{ g.address }}, {{ g.city }}</td>
               }
             </tr>
             <tr>
               <td class="fila-label">Distancia</td>
-              @for (g of comparisonSelection; track g.IDEESS) {
-                <td [class.mejor]="isBestDistance(g)">{{ g.distance?.toFixed(1) }} km</td>
+              @for (g of comparisonSelection; track g.id) {
+                <td [class.mejor]="isBestDistance(g)">{{ g.distance.toFixed(1) }} km</td>
               }
             </tr>
-            @for (row of rows; track row.field) {
+            @for (row of rows; track row.key) {
               <tr [class.fila-destacada]="fuelLabel() === row.label">
                 <td class="fila-label">{{ row.label }}</td>
-                @for (g of comparisonSelection; track g.IDEESS) {
-                  <td [class.mejor]="isBestPrice(g, row.field)" [class.sin-precio]="getPrice(g, row.field) === '—'">
-                    {{ getPrice(g, row.field) }}
-                    @if (getPrice(g, row.field) !== '—') { <span class="unidad">€/L</span> }
+                @for (g of comparisonSelection; track g.id) {
+                  <td [class.mejor]="isBestPrice(g, row.key)" [class.sin-precio]="getPrice(g, row.key) === '—'">
+                    {{ getPrice(g, row.key) }}
+                    @if (getPrice(g, row.key) !== '—') { <span class="unidad">€/L</span> }
                   </td>
                 }
               </tr>

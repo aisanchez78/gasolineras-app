@@ -29,7 +29,7 @@ export class ResultadosComponent {
   ];
 
   isSelected(g: Gasolinera): boolean {
-    return this.comparisonSelection.some(s => s.IDEESS === g.IDEESS);
+    return this.comparisonSelection.some(s => s.id === g.id);
   }
 
   get isComparisonFull(): boolean {

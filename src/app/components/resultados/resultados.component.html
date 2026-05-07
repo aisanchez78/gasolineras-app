@@ -32,7 +32,7 @@
     </div>
 
     <div class="grid">
-      @for (g of stations; track g.IDEESS; let i = $index) {
+      @for (g of stations; track g.id; let i = $index) {
         <app-tarjeta-gasolinera
           [station]="g"
           [filters]="filters"

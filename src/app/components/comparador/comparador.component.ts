@@ -3,13 +3,11 @@ import { CommonModule } from '@angular/common';
 import { Gasolinera, ActiveFilters, FuelType, FUEL_LABELS } from '../../models/gasolinera.model';
 import { StatusBadgeComponent } from '../shared/status-badge/status-badge.component';
 
-type PriceField = 'Precio Gasolina 95 E5' | 'Precio Gasoleo A' | 'Precio Gasolina 98 E5' | 'Precio Gasoil Premium';
-
-const ROWS: { label: string; field: PriceField }[] = [
-  { label: 'G95',       field: 'Precio Gasolina 95 E5' },
-  { label: 'Gasóleo A', field: 'Precio Gasoleo A' },
-  { label: 'G98',       field: 'Precio Gasolina 98 E5' },
-  { label: 'Gasoil P.', field: 'Precio Gasoil Premium' },
+const ROWS: { label: string; key: FuelType }[] = [
+  { label: 'G95',       key: 'gasolina95'    },
+  { label: 'Gasóleo A', key: 'gasoil'        },
+  { label: 'G98',       key: 'gasolina98'    },
+  { label: 'Gasoil P.', key: 'gasoilPremium' },
 ];
 
 @Component({
@@ -34,25 +32,20 @@ export class ComparadorComponent implements OnChanges {
 
   togglePanel() { this.panelOpen = !this.panelOpen; }
 
-  getPrice(g: Gasolinera, field: PriceField): string {
-    return (g[field] as string)?.trim() || '—';
+  getPrice(g: Gasolinera, key: FuelType): string {
+    return g.prices[key] || '—';
   }
 
-  private parse(s: string): number {
-    if (!s || s.trim() === '' || s === '—') return Infinity;
-    return parseFloat(s.replace(',', '.'));
-  }
-
-  isBestPrice(g: Gasolinera, field: PriceField): boolean {
-    const val = this.parse(g[field] as string);
-    if (val === Infinity) return false;
-    const min = Math.min(...this.comparisonSelection.map(s => this.parse(s[field] as string)));
+  isBestPrice(g: Gasolinera, key: FuelType): boolean {
+    const val = parseFloat(g.prices[key]);
+    if (isNaN(val)) return false;
+    const min = Math.min(...this.comparisonSelection.map(s => parseFloat(s.prices[key]) || Infinity));
     return val === min;
   }
 
   isBestDistance(g: Gasolinera): boolean {
-    const min = Math.min(...this.comparisonSelection.map(s => s.distance ?? Infinity));
-    return (g.distance ?? Infinity) === min;
+    const min = Math.min(...this.comparisonSelection.map(s => s.distance));
+    return g.distance === min;
   }
 
   fuelLabel(): string {

@@ -6,7 +6,7 @@ import { ResultadosComponent } from './components/resultados/resultados.componen
 import { MapaComponent } from './components/mapa/mapa.component';
 import { ComparadorComponent } from './components/comparador/comparador.component';
 import { GasolineraService } from './services/gasolinera.service';
-import { Gasolinera, ActiveFilters, Coordinates, SortOrder } from './models/gasolinera.model';
+import { Gasolinera, GasolineraAPI, ActiveFilters, Coordinates, SortOrder } from './models/gasolinera.model';
 
 @Component({
   selector: 'app-root',
@@ -28,7 +28,7 @@ export class AppComponent {
   readonly mobileTab      = signal<'list' | 'map'>('list');
   readonly theme          = signal<'dark' | 'light'>('dark');
 
-  private allStations        = signal<Gasolinera[]>([]);
+  private allStations        = signal<GasolineraAPI[]>([]);
   private enrichedCandidates = signal<Gasolinera[]>([]);
   readonly filteredStations  = computed(() =>
     this.svc.sortAndLimit(this.enrichedCandidates(), this.order(), this.filters().fuelType)
@@ -44,7 +44,7 @@ export class AppComponent {
   onFiltersChanged(f: ActiveFilters) { this.filters.set(f); if (this.userLocation()) this.applyFilters(); }
 
   onRouteSelected(g: Gasolinera) {
-    this.routeTarget.update(t => t?.IDEESS === g.IDEESS ? null : g);
+    this.routeTarget.update(t => t?.id === g.id ? null : g);
   }
 
   onOrderChanged(o: SortOrder) {
@@ -65,7 +65,7 @@ export class AppComponent {
 
   onToggleComparison(g: Gasolinera) {
     const current = this.comparisonSelection();
-    const idx = current.findIndex(s => s.IDEESS === g.IDEESS);
+    const idx = current.findIndex(s => s.id === g.id);
     if (idx >= 0) {
       this.comparisonSelection.set(current.filter((_, i) => i !== idx));
     } else if (current.length < 3) {
@@ -74,7 +74,7 @@ export class AppComponent {
   }
 
   onRemoveFromComparison(g: Gasolinera) {
-    this.comparisonSelection.update(list => list.filter(s => s.IDEESS !== g.IDEESS));
+    this.comparisonSelection.update(list => list.filter(s => s.id !== g.id));
   }
 
   onClearComparison() {

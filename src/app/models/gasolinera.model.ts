@@ -1,10 +1,12 @@
-export interface Gasolinera {
+// ── Raw API response ──────────────────────────────────────────────────────────
+export interface GasolineraAPI {
   IDEESS: string;
   'C.P.': string;
   Dirección: string;
   Horario: string;
   Latitud: string;
   'Longitud (WGS84)': string;
+  Longitud?: string;
   Municipio: string;
   Precio?: string;
   'Precio Biodiesel': string;
@@ -27,19 +29,33 @@ export interface Gasolinera {
   'Tipo Venta': string;
   '% BioEtanol': string;
   '% Éster metílico': string;
-  distance?: number;
-  isOpen?: boolean;
-  // alias de compatibilidad
-  Longitud?: string;
 }
 
 export interface RespuestaAPI {
-  ListaEESSPrecio: Gasolinera[];
+  ListaEESSPrecio: GasolineraAPI[];
   Fecha: string;
   Nota: string;
   ResultadoConsulta: string;
 }
 
+// ── Domain model ──────────────────────────────────────────────────────────────
+// Prices are stored as display strings (e.g. "1.479") — empty string means not available.
+export interface Gasolinera {
+  id: string;
+  name: string;
+  address: string;
+  city: string;
+  province: string;
+  postalCode: string;
+  schedule: string;
+  lat: number;
+  lng: number;
+  prices: Record<FuelType, string>;  // "1.479" or "" if not available
+  distance: number;
+  isOpen: boolean;
+}
+
+// ── Supporting types ──────────────────────────────────────────────────────────
 export type FuelType = 'gasolina95' | 'gasoil' | 'gasolina98' | 'gasoilPremium';
 
 export const FUEL_LABELS: Record<FuelType, string> = {
