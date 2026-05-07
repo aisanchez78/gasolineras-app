@@ -64,4 +64,20 @@ body {
   overflow-x: hidden;
 }
 
+/* Leaflet popup overrides — light mode tip */
 [data-theme="light"] .leaflet-popup-tip { background: #fff !important; }
+
+/* gasolinapp custom popup — strip default Leaflet chrome */
+.gasolinapp-popup .leaflet-popup-content-wrapper {
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+}
+.gasolinapp-popup .leaflet-popup-content {
+  margin: 0;
+  line-height: 1.4;
+}
+/* Dark mode popup tip color */
+[data-theme="dark"] .gasolinapp-popup .leaflet-popup-tip { background: #1a1a22; }
