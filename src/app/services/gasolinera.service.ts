@@ -4,6 +4,7 @@ import { Observable, map, switchMap, of } from 'rxjs';
 import { GeoService } from './geo.service';
 import { OsrmService } from './osrm.service';
 import { Gasolinera, RespuestaAPI, ActiveFilters, Coordinates, SortOrder } from '../models/gasolinera.model';
+import { environment } from '../../environments/environment';
 
 const MAX_CANDIDATOS_OSRM = 80;
 
@@ -12,7 +13,7 @@ export class GasolineraService {
   private http  = inject(HttpClient);
   private geo   = inject(GeoService);
   private osrm  = inject(OsrmService);
-  private apiUrl = 'https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/';
+  private readonly apiUrl = environment.apiUrl;
 
   fetchAllStations(): Observable<Gasolinera[]> {
     return this.http.get<RespuestaAPI>(this.apiUrl).pipe(
