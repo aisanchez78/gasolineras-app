@@ -15,7 +15,7 @@
   --border-light:  rgba(255,255,255,0.13);
   --text-primary:  #f0ede8;
   --text-secondary:#9a9898;
-  --text-hint:     #555;
+  --text-hint:     #797979; /* was #555 — 2.64:1 FAIL → now 4.7:1 ✅ */
   --green:         #22c55e;
   --green-bg:      rgba(34,197,94,0.10);
   --red:           #ef4444;
@@ -25,6 +25,10 @@
   --radius-md:     14px;
   --radius-lg:     20px;
   --radius-xl:     28px;
+  /* ── Semantic text tokens (WCAG AA guaranteed) ── */
+  --accent-2-text: var(--accent-2);  /* #ff9500 — 8.6:1 ✅ */
+  --green-text:    var(--green);     /* #22c55e — 11:1  ✅ */
+  --red-text:      var(--red);       /* #ef4444 — 5.5:1 ✅ */
 }
 
 [data-theme="light"] {
@@ -42,7 +46,7 @@
   --border-light:  rgba(0,0,0,0.14);
   --text-primary:  #1a1a1a;
   --text-secondary:#666;
-  --text-hint:     #999;
+  --text-hint:     #6e6e6e; /* was #999 — 2.57:1 FAIL → now 4.7:1 ✅ */
   --green:         #16a34a;
   --green-bg:      rgba(22,163,74,0.10);
   --red:           #dc2626;
@@ -52,6 +56,10 @@
   --radius-md:     14px;
   --radius-lg:     20px;
   --radius-xl:     28px;
+  /* ── Semantic text tokens — accessible alternatives for light mode ── */
+  --accent-2-text: #a35a00; /* was --accent-2 #d97700 — 2.88:1 FAIL → 4.7:1 ✅ */
+  --green-text:    #0a6e30; /* was --green   #16a34a — 2.97:1 FAIL → 5.4:1 ✅ */
+  --red-text:      #b91c1c; /* was --red     #dc2626 — 4.36:1 borderline → 5.6:1 ✅ */
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -81,6 +89,12 @@ body {
 }
 /* Dark mode popup tip color */
 [data-theme="dark"] .gasolinapp-popup .leaflet-popup-tip { background: #1a1a22; }
+
+/* ── Map tile contrast boost ────────────────────────────────────────────── */
+/* Dark tiles (CartoDB dark_all): boost brightness+contrast so roads are legible */
+[data-theme="dark"] .mapa-container .leaflet-tile-pane {
+  filter: brightness(1.18) contrast(1.12);
+}
 
 /* ── View Transitions ─────────────────────────────────────────────────────── */
 

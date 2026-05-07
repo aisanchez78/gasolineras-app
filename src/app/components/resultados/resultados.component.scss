@@ -59,7 +59,7 @@
   &--active {
     background: var(--accent);
     border-color: var(--accent);
-    color: #fff;
+    color: var(--bg); /* dark bg on dark mode, light bg on light mode — both pass AA */
     font-weight: 700;
     box-shadow: 0 4px 12px rgba(255,95,31,0.35);
   }

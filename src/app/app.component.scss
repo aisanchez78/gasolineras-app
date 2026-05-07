@@ -127,7 +127,7 @@
   transition: color .15s, background .15s;
 
   &--active {
-    color: var(--accent-2);
+    color: var(--accent-2-text);
     background: rgba(255,95,31,0.08);
   }
 }
