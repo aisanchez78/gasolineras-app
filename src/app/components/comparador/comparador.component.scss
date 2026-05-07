@@ -1,12 +1,12 @@
 .comparador {
   position: fixed;
   bottom: 0; left: 0; right: 0;
-  z-index: 200;
-  background: rgba(13,13,15,0.97);
+  z-index: 1100; /* above Leaflet controls (max 1000) */
+  background: color-mix(in srgb, var(--bg) 97%, transparent);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border-top: 1px solid rgba(255,95,31,0.25);
-  box-shadow: 0 -8px 40px rgba(0,0,0,0.5);
+  box-shadow: 0 -8px 40px color-mix(in srgb, var(--bg) 60%, transparent);
 }
 
 .comparador-bar {
@@ -102,15 +102,15 @@
 .fila-dir { font-size: .75rem; color: var(--text-secondary); font-weight: 300; line-height: 1.4; }
 .fila-destacada { background: rgba(255,95,31,0.04); .fila-label { color: var(--accent-2); } }
 
-td.mejor { color: #86efac; font-weight: 700; .unidad { color: #86efac; opacity: .7; } }
+td.mejor { color: var(--green); font-weight: 700; .unidad { color: var(--green); opacity: .7; } }
 td.sin-precio { color: var(--text-hint); }
 .unidad { font-size: .7rem; font-weight: 400; color: var(--text-secondary); margin-left: .2rem; }
 
 .estado {
   font-size: .65rem; font-weight: 700; padding: .2rem .6rem;
   border-radius: 6px; text-transform: uppercase; letter-spacing: .06em;
-  &--abierta { background: var(--green-bg); color: #86efac; }
-  &--cerrada  { background: var(--red-bg);   color: #fca5a5; }
+  &--abierta { background: var(--green-bg); color: var(--green); }
+  &--cerrada  { background: var(--red-bg);   color: var(--red);   }
 }
 
 @media (max-width: 960px) {
