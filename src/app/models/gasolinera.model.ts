@@ -40,8 +40,17 @@ export interface RespuestaAPI {
   ResultadoConsulta: string;
 }
 
+export type FuelType = 'gasolina95' | 'gasoil' | 'gasolina98' | 'gasoilPremium';
+
+export const FUEL_LABELS: Record<FuelType, string> = {
+  gasolina95:    'Gasolina 95',
+  gasoil:        'Gasóleo A',
+  gasolina98:    'Gasolina 98',
+  gasoilPremium: 'Gasóleo Premium',
+};
+
 export interface ActiveFilters {
-  fuelType: 'gasolina95' | 'gasoil' | 'gasolina98' | 'gasoilPremium';
+  fuelType: FuelType;
   brands: string[];
   radiusKm: number;
 }

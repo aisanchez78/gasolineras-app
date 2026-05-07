@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, ElementRef, AfterViewInit, inject, SimpleChanges } from '@angular/core';
 import * as L from 'leaflet';
-import { Gasolinera, Coordinates, ActiveFilters } from '../../models/gasolinera.model';
+import { Gasolinera, Coordinates, ActiveFilters, FuelType } from '../../models/gasolinera.model';
 import { OsrmService } from '../../services/osrm.service';
 import { environment } from '../../../environments/environment';
 
@@ -231,7 +231,7 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   private getHighlightedPrice(g: Gasolinera): string {
-    const prices: Record<string, string> = {
+    const prices: Record<FuelType, string> = {
       gasolina95:    g['Precio Gasolina 95 E5'],
       gasoil:        g['Precio Gasoleo A'],
       gasolina98:    g['Precio Gasolina 98 E5'],

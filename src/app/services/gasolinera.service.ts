@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map, switchMap, of } from 'rxjs';
 import { GeoService } from './geo.service';
 import { OsrmService } from './osrm.service';
-import { Gasolinera, RespuestaAPI, ActiveFilters, Coordinates, SortOrder } from '../models/gasolinera.model';
+import { Gasolinera, RespuestaAPI, ActiveFilters, Coordinates, SortOrder, FuelType } from '../models/gasolinera.model';
 import { environment } from '../../environments/environment';
 
 const MAX_CANDIDATOS_OSRM = 80;
@@ -64,7 +64,7 @@ export class GasolineraService {
   }
 
   // Sorts and limits to 20. Call after enrichWithRealDistances or when only order changes.
-  sortAndLimit(stations: Gasolinera[], order: SortOrder, fuelType: ActiveFilters['fuelType']): Gasolinera[] {
+  sortAndLimit(stations: Gasolinera[], order: SortOrder, fuelType: FuelType): Gasolinera[] {
     const field = this.getPriceField(fuelType);
     return [...stations].sort((a, b) => {
       if (order === 'distance') return (a.distance ?? 999) - (b.distance ?? 999);
@@ -75,8 +75,8 @@ export class GasolineraService {
     }).slice(0, 20);
   }
 
-  private getPriceField(fuelType: ActiveFilters['fuelType']): keyof Gasolinera {
-    const map: Record<ActiveFilters['fuelType'], keyof Gasolinera> = {
+  private getPriceField(fuelType: FuelType): keyof Gasolinera {
+    const map: Record<FuelType, keyof Gasolinera> = {
       gasolina95:    'Precio Gasolina 95 E5',
       gasoil:        'Precio Gasoleo A',
       gasolina98:    'Precio Gasolina 98 E5',
