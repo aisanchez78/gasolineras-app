@@ -99,7 +99,8 @@
 
 @media (max-width: 960px) {
   .app-main { grid-template-columns: 1fr; padding: 1rem; }
-  .sidebar { position: static; }
+  .sidebar { position: static; min-width: 0; }
+  .contenido { min-width: 0; }
   .app-header { padding: 1rem 1.25rem; }
 }
 
@@ -134,12 +135,37 @@
 @media (max-width: 768px) {
   .mobile-tabs { display: flex; }
 
-  // On mobile, hide the map when list tab is active and vice versa
+  // app-main is single-column with no gap between tabs on mobile
+  .app-main {
+    padding: 0 0 5rem;
+    gap: 0;
+    // prevent grid from expanding beyond viewport
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  // Sidebar: hidden by default on mobile, shown only on search tab
+  .sidebar {
+    display: none;
+    padding: 1rem;
+    gap: 1rem;
+
+    &.mobile-visible { display: flex; }
+  }
+
+  // contenido always takes full width
+  .contenido {
+    min-width: 0;
+    padding: 0;
+  }
+
+  // Map tab: show map, hide results
   .mapa-wrap { display: none; }
-  .mobile-map .mapa-wrap  { display: block; }
+  .mobile-map .mapa-wrap { display: block; }
   .mobile-map app-resultados { display: none; }
 
+  // List tab: show results, hide map
+  .mobile-list .mapa-wrap { display: none; }
+
   // Ensure app content doesn't overlap tab bar
-  .has-comparador .app-main { padding-bottom: 8rem; }
-  .app-main { padding-bottom: 4.5rem; }
+  .has-comparador .app-main { padding-bottom: 9rem; }
 }

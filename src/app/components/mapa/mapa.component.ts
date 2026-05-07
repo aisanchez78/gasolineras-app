@@ -64,6 +64,12 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() routeTarget: Gasolinera | null = null;
   @Input() comparisonSelection: Gasolinera[] = [];
   @Input() theme: 'dark' | 'light' = 'dark';
+  /** Set to true when the map tab becomes visible — triggers invalidateSize so tiles render correctly. */
+  @Input() set active(v: boolean) {
+    if (v && this.map) {
+      setTimeout(() => this.map?.invalidateSize(), 80);
+    }
+  }
 
   @Output() toggleComparison = new EventEmitter<Gasolinera>();
 
