@@ -2,11 +2,12 @@ import { Component, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FuelType, FUEL_LABELS, ActiveFilters } from '../../models/gasolinera.model';
+import { ChipButtonComponent } from '../shared/chip-button/chip-button.component';
 
 @Component({
   selector: 'app-filtros',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ChipButtonComponent],
   templateUrl: './filtros.component.html',
   styleUrl: './filtros.component.scss'
 })

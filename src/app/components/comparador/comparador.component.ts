@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Gasolinera, ActiveFilters, FuelType, FUEL_LABELS } from '../../models/gasolinera.model';
+import { StatusBadgeComponent } from '../shared/status-badge/status-badge.component';
 
 type PriceField = 'Precio Gasolina 95 E5' | 'Precio Gasoleo A' | 'Precio Gasolina 98 E5' | 'Precio Gasoil Premium';
 
@@ -14,7 +15,7 @@ const ROWS: { label: string; field: PriceField }[] = [
 @Component({
   selector: 'app-comparador',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, StatusBadgeComponent],
   templateUrl: './comparador.component.html',
   styleUrl: './comparador.component.scss',
 })

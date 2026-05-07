@@ -6,13 +6,11 @@
       <legend class="filtro-label">Tipo de carburante</legend>
       <div class="chips-row">
         @for (tipo of fuelTypes; track tipo.value) {
-          <button
-            class="chip"
-            [class.chip--active]="fuelType === tipo.value"
-            [attr.aria-pressed]="fuelType === tipo.value"
-            (click)="fuelType = tipo.value; emit()">
+          <app-chip-button
+            [active]="fuelType === tipo.value"
+            (clicked)="fuelType = tipo.value; emit()">
             {{ tipo.label }}
-          </button>
+          </app-chip-button>
         }
       </div>
     </fieldset>
@@ -34,13 +32,11 @@
     <label class="filtro-label">Filtrar por marca (lista blanca)</label>
     <div class="marcas-grid">
       @for (brand of availableBrands; track brand) {
-        <button
-          class="marca-chip"
-          [class.marca-chip--active]="isBrandSelected(brand)"
-          [attr.aria-pressed]="isBrandSelected(brand)"
-          (click)="toggleBrand(brand)">
+        <app-chip-button
+          [active]="isBrandSelected(brand)"
+          (clicked)="toggleBrand(brand)">
           {{ brand }}
-        </button>
+        </app-chip-button>
       }
     </div>
     @if (selectedBrands.length > 0) {

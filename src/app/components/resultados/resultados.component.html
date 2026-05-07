@@ -21,13 +21,11 @@
         <span class="orden-label">Ordenar por</span>
         <div class="orden-chips">
           @for (op of opciones; track op.value) {
-            <button
-              class="orden-chip"
-              [class.orden-chip--active]="order === op.value"
-              [attr.aria-pressed]="order === op.value"
-              (click)="orderChanged.emit(op.value)">
+            <app-chip-button
+              [active]="order === op.value"
+              (clicked)="orderChanged.emit(op.value)">
               {{ op.icon }} {{ op.label }}
-            </button>
+            </app-chip-button>
           }
         </div>
       </div>
