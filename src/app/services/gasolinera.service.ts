@@ -51,7 +51,9 @@ export class GasolineraService {
       .filter(s =>
         s.distance <= filters.radiusKm
         && (filters.brands.length === 0 ||
-            (filters.brandMode === 'deny' ? !filters.brands.includes(s.name) : filters.brands.includes(s.name)))
+            (filters.brandMode === 'deny'
+              ? !filters.brands.some(b => b.toUpperCase() === s.name.toUpperCase())
+              : filters.brands.some(b => b.toUpperCase() === s.name.toUpperCase())))
         && s.prices[filters.fuelType] !== ''
         && s.lat !== 0 && s.lng !== 0
       );

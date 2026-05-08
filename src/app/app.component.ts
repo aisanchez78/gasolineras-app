@@ -33,6 +33,9 @@ export class AppComponent {
   readonly filteredStations  = computed(() =>
     this.svc.sortAndLimit(this.enrichedCandidates(), this.order(), this.filters().fuelType)
   );
+  readonly availableBrands   = computed(() =>
+    [...new Set(this.enrichedCandidates().map(g => g.name.toUpperCase()))].sort()
+  );
 
   toggleTheme() {
     const apply = () => {

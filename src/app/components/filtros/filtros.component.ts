@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FuelType, FUEL_LABELS, ActiveFilters, BrandMode } from '../../models/gasolinera.model';
@@ -12,17 +12,13 @@ import { ChipButtonComponent } from '../shared/chip-button/chip-button.component
   styleUrl: './filtros.component.scss'
 })
 export class FiltrosComponent implements OnInit {
+  @Input() availableBrands: string[] = [];
   @Output() filtersChanged = new EventEmitter<ActiveFilters>();
 
   fuelType: FuelType = 'gasolina95';
   radiusKm = 10;
   selectedBrands: string[] = [];
   brandMode: BrandMode = 'allow';
-
-  availableBrands = [
-    'REPSOL', 'CEPSA', 'BP', 'SHELL', 'GALP', 'CAMPSA', 'PETRONOR',
-    'ESSO', 'BALLENOIL', 'PLENOIL', 'CARREFOUR'
-  ];
 
   readonly fuelTypes = (Object.keys(FUEL_LABELS) as FuelType[]).map(value => ({
     value,

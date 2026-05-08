@@ -28,7 +28,7 @@
   <main class="app-main" [attr.data-tab]="mobileTab()">
     <aside class="sidebar" [class.mobile-visible]="mobileTab() === 'search'">
       <app-buscador (locationDetected)="onLocationDetected($event)" />
-      <app-filtros (filtersChanged)="onFiltersChanged($event)" />
+      <app-filtros [availableBrands]="availableBrands()" (filtersChanged)="onFiltersChanged($event)" />
     </aside>
 
     <div class="contenido" [class.mobile-map]="mobileTab() === 'map'" [class.mobile-list]="mobileTab() === 'list'">
