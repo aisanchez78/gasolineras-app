@@ -72,8 +72,11 @@
   gap: 1.25rem;
   position: sticky;
   top: 90px;
-  max-height: calc(100vh - 90px);
-  overflow-y: auto;
+  max-height: calc(100vh - 90px - 2rem);
+  overflow: hidden;
+
+  app-buscador { flex-shrink: 0; }
+  app-filtros   { flex: 1; min-height: 0; display: flex; flex-direction: column; }
 }
 
 .mapa-wrap { display: block; margin-bottom: 1.5rem; }
