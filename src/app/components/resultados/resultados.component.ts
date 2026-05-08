@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TarjetaGasolineraComponent } from '../tarjeta-gasolinera/tarjeta-gasolinera.component';
 import { ChipButtonComponent } from '../shared/chip-button/chip-button.component';
@@ -12,6 +12,7 @@ import { Gasolinera, ActiveFilters, SortOrder } from '../../models/gasolinera.mo
   styleUrl: './resultados.component.scss'
 })
 export class ResultadosComponent implements OnChanges {
+  constructor(private cdr: ChangeDetectorRef) {}
   @Input() stations: Gasolinera[] = [];
   @Input() filters!: ActiveFilters;
   @Input() order: SortOrder = 'price';
@@ -62,7 +63,20 @@ export class ResultadosComponent implements OnChanges {
 
   goToPage(page: number | '...') {
     if (page === '...' || page < 1 || page > this.totalPages) return;
-    this.currentPage = page;
+    const dir = (page as number) > this.currentPage ? 'forward' : 'back';
+    document.documentElement.dataset['pgDir'] = dir;
+
+    const update = () => {
+      this.currentPage = page as number;
+      this.cdr.detectChanges();
+    };
+
+    if ('startViewTransition' in document) {
+      (document as any).startViewTransition(update);
+    } else {
+      update();
+    }
+
     document.querySelector('.resultados-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
