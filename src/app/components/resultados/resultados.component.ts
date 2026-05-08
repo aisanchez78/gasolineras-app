@@ -87,4 +87,9 @@ export class ResultadosComponent implements OnChanges {
   get isComparisonFull(): boolean {
     return this.comparisonSelection.length >= 3;
   }
+
+  get ghosts(): number[] {
+    const remainder = this.pagedStations.length % this.PAGE_SIZE;
+    return remainder === 0 ? [] : Array(this.PAGE_SIZE - remainder).fill(0);
+  }
 }

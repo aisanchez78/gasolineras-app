@@ -41,6 +41,9 @@
           (routeSelected)="routeSelected.emit(g)">
         </app-tarjeta-gasolinera>
       }
+      @for (_ of ghosts; track $index) {
+        <div class="tarjeta-ghost" aria-hidden="true"></div>
+      }
     </div>
 
     <!-- Móvil: todos los resultados sin paginación -->

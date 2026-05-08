@@ -79,7 +79,9 @@
 
 // Desktop: muestra grid paginado, oculta el grid completo
 .grid--mobile  { display: none; }
-.grid--desktop { display: grid; align-items: start; view-transition-name: results-grid; }
+.grid--desktop { display: grid; view-transition-name: results-grid; }
+
+.tarjeta-ghost { visibility: hidden; }
 
 .estado-info {
   display: flex;
