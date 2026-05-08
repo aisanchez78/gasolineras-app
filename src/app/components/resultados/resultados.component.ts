@@ -35,7 +35,16 @@ export class ResultadosComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (changes['stations'] || changes['order']) {
       this.currentPage = 1;
+      document.documentElement.style.removeProperty('--results-row-h');
+      setTimeout(() => this.measureRowHeight());
     }
+  }
+
+  private measureRowHeight() {
+    const cards = document.querySelectorAll('.grid--desktop app-tarjeta-gasolinera');
+    if (!cards.length) return;
+    const max = Math.max(...Array.from(cards).map(c => (c as HTMLElement).getBoundingClientRect().height));
+    if (max > 0) document.documentElement.style.setProperty('--results-row-h', `${Math.ceil(max)}px`);
   }
 
   get totalPages(): number {
