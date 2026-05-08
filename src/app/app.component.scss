@@ -9,7 +9,7 @@
 .app-header {
   padding: 1.25rem 2.5rem;
   border-bottom: 1px solid var(--border);
-  background: rgba(13,13,15,0.85);
+  background: color-mix(in srgb, var(--bg-2) 85%, transparent);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   position: sticky;

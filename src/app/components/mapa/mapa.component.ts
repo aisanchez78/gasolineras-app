@@ -228,7 +228,7 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
       if (!route || !this.map) return;
 
       this.rutaLayer = L.geoJSON(route.geometry as any, {
-        style: { color: '#ff5f1f', weight: 5, opacity: 0.8 },
+        style: { color: cssVar('--accent'), weight: 5, opacity: 0.8 },
       }).addTo(this.map);
 
       const km = (route.distanceMeters / 1000).toFixed(1);
