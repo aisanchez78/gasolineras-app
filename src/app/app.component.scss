@@ -168,6 +168,6 @@
   // List tab: hide map
   .mobile-list .mapa-wrap { display: none; }
 
-  // comparador padding
-  .has-comparador .app-main { padding-bottom: 9rem; }
+  // When comparador is active: content needs clearance for tabs (60px) + comparador bar (≈56px) + gap
+  .has-comparador .app-main { padding-bottom: calc(9rem + 60px); }
 }
