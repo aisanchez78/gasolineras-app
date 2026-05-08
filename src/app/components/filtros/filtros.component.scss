@@ -12,11 +12,21 @@
   padding: 1.25rem 1.75rem;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  display: flex;
-  flex-direction: column;
   flex: 1;
   min-height: 0;
-  overflow: hidden;
+  overflow-y: auto;
+
+  /* Scrollbar — fino, semitransparente, acorde al tema */
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-light) transparent;
+
+  &::-webkit-scrollbar       { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb {
+    background: var(--border-light);
+    border-radius: 2px;
+    &:hover { background: var(--accent-glow); }
+  }
 }
 
 .filtros-titulo {
@@ -31,16 +41,7 @@
 
 .filtro-grupo {
   margin-bottom: 1.1rem;
-  flex-shrink: 0;
-
-  &:last-child {
-    margin-bottom: 0;
-    flex: 1;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
+  &:last-child { margin-bottom: 0; }
 }
 
 .filtro-label {
@@ -171,22 +172,7 @@
 }
 
 // ── Brand chips ──────────────────────────────────────────────────────────────
-.marcas-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .35rem;
-  overflow-y: auto;
-  flex: 1;
-  min-height: 0;
-  align-content: flex-start;
-  scrollbar-width: thin;
-  scrollbar-color: var(--border-light) transparent;
-  padding-right: .25rem;
-
-  &::-webkit-scrollbar       { width: 4px; }
-  &::-webkit-scrollbar-track { background: transparent; }
-  &::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 2px; }
-}
+.marcas-grid { display: flex; flex-wrap: wrap; gap: .4rem; }
 
 .marca-chip {
   padding: .3rem .7rem;
