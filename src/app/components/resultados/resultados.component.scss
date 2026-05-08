@@ -81,7 +81,7 @@
 .grid--mobile  { display: none; }
 .grid--desktop { display: grid; view-transition-name: results-grid; }
 
-.tarjeta-ghost { visibility: hidden; }
+.tarjeta-ghost { visibility: hidden; min-height: 270px; }
 
 .estado-info {
   display: flex;
