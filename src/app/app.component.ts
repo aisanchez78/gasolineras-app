@@ -6,7 +6,7 @@ import { ResultadosComponent } from './components/resultados/resultados.componen
 import { MapaComponent } from './components/mapa/mapa.component';
 import { ComparadorComponent } from './components/comparador/comparador.component';
 import { GasolineraService } from './services/gasolinera.service';
-import { Gasolinera, GasolineraAPI, ActiveFilters, Coordinates, SortOrder } from './models/gasolinera.model';
+import { Gasolinera, GasolineraAPI, ActiveFilters, Coordinates, SortOrder, FuelType, FUEL_LABELS } from './models/gasolinera.model';
 
 @Component({
   selector: 'app-root',
@@ -33,8 +33,13 @@ export class AppComponent {
   readonly filteredStations  = computed(() =>
     this.svc.sortAndLimit(this.enrichedCandidates(), this.order(), this.filters().fuelType)
   );
-  readonly availableBrands   = computed(() =>
+  readonly availableBrands      = computed(() =>
     [...new Set(this.enrichedCandidates().map(g => g.name.toUpperCase()))].sort()
+  );
+  readonly availableFuelTypes   = computed(() =>
+    (Object.keys(FUEL_LABELS) as FuelType[]).filter(type =>
+      this.enrichedCandidates().some(g => g.prices[type] !== '')
+    )
   );
 
   toggleTheme() {

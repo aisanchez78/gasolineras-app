@@ -2,21 +2,6 @@
   <h3 class="filtros-titulo">Filtros</h3>
 
   <div class="filtro-grupo">
-    <fieldset class="fieldset-chips">
-      <legend class="filtro-label">Tipo de carburante</legend>
-      <div class="chips-row">
-        @for (tipo of fuelTypes; track tipo.value) {
-          <app-chip-button
-            [active]="fuelType === tipo.value"
-            (clicked)="fuelType = tipo.value; emit()">
-            {{ tipo.label }}
-          </app-chip-button>
-        }
-      </div>
-    </fieldset>
-  </div>
-
-  <div class="filtro-grupo">
     <label class="filtro-label">Radio de búsqueda: <strong>{{ radiusKm }} km</strong></label>
     <input
   type="range" min="1" max="50"
@@ -28,41 +13,58 @@
     </div>
   </div>
 
-  <div class="filtro-grupo">
-    <div class="marcas-header">
-      <label class="filtro-label">Filtrar por marca</label>
-      <div class="mode-toggle" role="group" aria-label="Modo de filtro de marcas">
-        <button class="mode-btn"
-          [class.mode-btn--active]="brandMode === 'allow'"
-          [attr.aria-pressed]="brandMode === 'allow'"
-          (click)="setBrandMode('allow')">Solo estas</button>
-        <button class="mode-btn mode-btn--deny"
-          [class.mode-btn--active]="brandMode === 'deny'"
-          [attr.aria-pressed]="brandMode === 'deny'"
-          (click)="setBrandMode('deny')">Excluir</button>
-      </div>
+  @if (hasData) {
+    <div class="filtro-grupo">
+      <fieldset class="fieldset-chips">
+        <legend class="filtro-label">Tipo de carburante</legend>
+        <div class="chips-row">
+          @for (tipo of fuelTypes; track tipo.value) {
+            <app-chip-button
+              [active]="fuelType === tipo.value"
+              (clicked)="fuelType = tipo.value; emit()">
+              {{ tipo.label }}
+            </app-chip-button>
+          }
+        </div>
+      </fieldset>
     </div>
-    <div class="marcas-grid">
-      @for (brand of availableBrands; track brand) {
-        <button class="marca-chip"
-          [class.marca-chip--active]="isBrandSelected(brand)"
-          [class.marca-chip--deny]="isBrandSelected(brand) && brandMode === 'deny'"
-          [attr.aria-pressed]="isBrandSelected(brand)"
-          (click)="toggleBrand(brand)">
-          @if (isBrandSelected(brand) && brandMode === 'deny') { ✕ }
-          {{ brand }}
-        </button>
+
+    <div class="filtro-grupo">
+      <div class="marcas-header">
+        <label class="filtro-label">Filtrar por marca</label>
+        <div class="mode-toggle" role="group" aria-label="Modo de filtro de marcas">
+          <button class="mode-btn"
+            [class.mode-btn--active]="brandMode === 'allow'"
+            [attr.aria-pressed]="brandMode === 'allow'"
+            (click)="setBrandMode('allow')">Solo estas</button>
+          <button class="mode-btn mode-btn--deny"
+            [class.mode-btn--active]="brandMode === 'deny'"
+            [attr.aria-pressed]="brandMode === 'deny'"
+            (click)="setBrandMode('deny')">Excluir</button>
+        </div>
+      </div>
+      <div class="marcas-grid">
+        @for (brand of availableBrands; track brand) {
+          <button class="marca-chip"
+            [class.marca-chip--active]="isBrandSelected(brand)"
+            [class.marca-chip--deny]="isBrandSelected(brand) && brandMode === 'deny'"
+            [attr.aria-pressed]="isBrandSelected(brand)"
+            (click)="toggleBrand(brand)">
+            @if (isBrandSelected(brand) && brandMode === 'deny') { ✕ }
+            {{ brand }}
+          </button>
+        }
+      </div>
+      @if (selectedBrands.length > 0) {
+        <div class="marcas-footer">
+          <p class="marcas-nota" [class.marcas-nota--deny]="brandMode === 'deny'">
+            {{ brandNote }}
+          </p>
+          <button class="btn-limpiar-marcas" (click)="clearBrands()" aria-label="Eliminar filtro de marcas">
+            Limpiar
+          </button>
+        </div>
       }
     </div>
-    @if (selectedBrands.length > 0) {
-      <div class="marcas-footer">
-        <p class="marcas-nota" [class.marcas-nota--deny]="brandMode === 'deny'">
-          {{ brandNote }}
-        </p>
-        <button class="btn-limpiar-marcas" (click)="clearBrands()" aria-label="Eliminar filtro de marcas">
-          Limpiar
-        </button>
-      </div>
-    }
-  </div>
+  }
 </section>
