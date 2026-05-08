@@ -19,7 +19,7 @@ export class AppComponent {
   private svc = inject(GasolineraService);
 
   readonly userLocation   = signal<Coordinates | null>(null);
-  readonly filters        = signal<ActiveFilters>({ fuelType: 'gasolina95', radiusKm: 10, brands: [] });
+  readonly filters        = signal<ActiveFilters>({ fuelType: 'gasolina95', radiusKm: 10, brands: [], brandMode: 'allow' });
   readonly order          = signal<SortOrder>('price');
   readonly loading        = signal(false);
   readonly hasSearched    = signal(false);

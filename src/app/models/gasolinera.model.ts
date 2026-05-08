@@ -65,9 +65,12 @@ export const FUEL_LABELS: Record<FuelType, string> = {
   gasoilPremium: 'Gasóleo Premium',
 };
 
+export type BrandMode = 'allow' | 'deny';
+
 export interface ActiveFilters {
   fuelType: FuelType;
   brands: string[];
+  brandMode: BrandMode;
   radiusKm: number;
 }
 
