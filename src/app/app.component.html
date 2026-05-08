@@ -36,6 +36,15 @@
     </aside>
 
     <div class="contenido" [class.mobile-map]="mobileTab() === 'map'" [class.mobile-list]="mobileTab() === 'list'">
+      <!-- Pill bar: visible at 769–1100px instead of sidebar filtros -->
+      <div class="pill-bar-wrap">
+        <app-filtros mode="pill"
+          [availableFuelTypes]="availableFuelTypes()"
+          [availableBrands]="availableBrands()"
+          [hasData]="hasSearched()"
+          (filtersChanged)="onFiltersChanged($event)" />
+      </div>
+
       @if (hasSearched() && filteredStations().length > 0) {
         <app-mapa
           [stations]="filteredStations()"

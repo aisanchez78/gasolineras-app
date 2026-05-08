@@ -1,72 +1,141 @@
-<section class="filtros-card">
-  <div class="filtros-scroll">
-  <h3 class="filtros-titulo">Filtros</h3>
+<!-- ── SIDEBAR (vertical) ─────────────────────────────────────────────── -->
+@if (mode === 'sidebar') {
+  <section class="filtros-card">
+    <div class="filtros-scroll">
+      <h3 class="filtros-titulo">Filtros</h3>
 
-  <div class="filtro-grupo">
-    <label class="filtro-label">Radio de búsqueda: <strong>{{ radiusKm }} km</strong></label>
-    <input
-  type="range" min="1" max="50"
-  [(ngModel)]="radiusKm"
-  (ngModelChange)="emit()"
-  class="slider"
-  [style]="'--pct:' + (radiusKm * 2) + '%'" />    <div class="slider-ticks">
-      <span>1 km</span><span>25 km</span><span>50 km</span>
-    </div>
-  </div>
+      <div class="filtro-grupo">
+        <label class="filtro-label">Radio de búsqueda: <strong>{{ radiusKm }} km</strong></label>
+        <input type="range" min="1" max="50" [(ngModel)]="radiusKm" (ngModelChange)="emit()"
+          class="slider" [style]="'--pct:' + (radiusKm * 2) + '%'" />
+        <div class="slider-ticks"><span>1 km</span><span>25 km</span><span>50 km</span></div>
+      </div>
 
-  @if (hasData) {
-    <div class="filtro-grupo">
-      <fieldset class="fieldset-chips">
-        <legend class="filtro-label">Tipo de carburante</legend>
-        <div class="chips-row">
-          @for (tipo of fuelTypes; track tipo.value) {
-            <app-chip-button
-              [active]="fuelType === tipo.value"
-              (clicked)="fuelType = tipo.value; emit()">
-              {{ tipo.label }}
-            </app-chip-button>
+      @if (hasData) {
+        <div class="filtro-grupo">
+          <fieldset class="fieldset-chips">
+            <legend class="filtro-label">Tipo de carburante</legend>
+            <div class="chips-row">
+              @for (tipo of fuelTypes; track tipo.value) {
+                <app-chip-button [active]="fuelType === tipo.value"
+                  (clicked)="fuelType = tipo.value; emit()">{{ tipo.label }}</app-chip-button>
+              }
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="filtro-grupo">
+          <div class="marcas-header">
+            <label class="filtro-label">Filtrar por marca</label>
+            <div class="mode-toggle" role="group" aria-label="Modo de filtro de marcas">
+              <button class="mode-btn" [class.mode-btn--active]="brandMode === 'allow'"
+                [attr.aria-pressed]="brandMode === 'allow'" (click)="setBrandMode('allow')">Solo estas</button>
+              <button class="mode-btn mode-btn--deny" [class.mode-btn--active]="brandMode === 'deny'"
+                [attr.aria-pressed]="brandMode === 'deny'" (click)="setBrandMode('deny')">Excluir</button>
+            </div>
+          </div>
+          <div class="marcas-grid">
+            @for (brand of visibleBrands; track brand) {
+              <button class="marca-chip" [class.marca-chip--active]="isBrandSelected(brand)"
+                [class.marca-chip--deny]="isBrandSelected(brand) && brandMode === 'deny'"
+                [attr.aria-pressed]="isBrandSelected(brand)" (click)="toggleBrand(brand)">
+                @if (isBrandSelected(brand) && brandMode === 'deny') { ✕ }{{ brand }}
+              </button>
+            }
+          </div>
+          @if (hiddenBrandsCount > 0) {
+            <button class="btn-mostrar-marcas"
+              (click)="brandsExpanded = !brandsExpanded"
+              [attr.aria-expanded]="brandsExpanded">
+              {{ brandsExpanded ? 'Mostrar menos' : 'Mostrar todas (' + hiddenBrandsCount + ' más)' }}
+            </button>
           }
-        </div>
-      </fieldset>
-    </div>
-
-    <div class="filtro-grupo">
-      <div class="marcas-header">
-        <label class="filtro-label">Filtrar por marca</label>
-        <div class="mode-toggle" role="group" aria-label="Modo de filtro de marcas">
-          <button class="mode-btn"
-            [class.mode-btn--active]="brandMode === 'allow'"
-            [attr.aria-pressed]="brandMode === 'allow'"
-            (click)="setBrandMode('allow')">Solo estas</button>
-          <button class="mode-btn mode-btn--deny"
-            [class.mode-btn--active]="brandMode === 'deny'"
-            [attr.aria-pressed]="brandMode === 'deny'"
-            (click)="setBrandMode('deny')">Excluir</button>
-        </div>
-      </div>
-      <div class="marcas-grid">
-        @for (brand of availableBrands; track brand) {
-          <button class="marca-chip"
-            [class.marca-chip--active]="isBrandSelected(brand)"
-            [class.marca-chip--deny]="isBrandSelected(brand) && brandMode === 'deny'"
-            [attr.aria-pressed]="isBrandSelected(brand)"
-            (click)="toggleBrand(brand)">
-            @if (isBrandSelected(brand) && brandMode === 'deny') { ✕ }
-            {{ brand }}
-          </button>
-        }
-      </div>
-      @if (selectedBrands.length > 0) {
-        <div class="marcas-footer">
-          <p class="marcas-nota" [class.marcas-nota--deny]="brandMode === 'deny'">
-            {{ brandNote }}
-          </p>
-          <button class="btn-limpiar-marcas" (click)="clearBrands()" aria-label="Eliminar filtro de marcas">
-            Limpiar
-          </button>
+          @if (selectedBrands.length > 0) {
+            <div class="marcas-footer">
+              <p class="marcas-nota" [class.marcas-nota--deny]="brandMode === 'deny'">{{ brandNote }}</p>
+              <button class="btn-limpiar-marcas" (click)="clearBrands()" aria-label="Eliminar filtro de marcas">
+                Limpiar
+              </button>
+            </div>
+          }
         </div>
       }
     </div>
-  }
+  </section>
+}
+
+<!-- ── PILL BAR (horizontal, tablet/laptop) ───────────────────────────── -->
+@if (mode === 'pill' && hasData) {
+  <div class="pill-bar" role="toolbar" aria-label="Filtros activos">
+
+    <!-- Radio -->
+    <div class="pill-section pill-section--radio">
+      <span class="pill-label">Radio</span>
+      <div class="pill-slider-wrap">
+        <input type="range" min="1" max="50" [(ngModel)]="radiusKm" (ngModelChange)="emit()"
+          class="slider slider--pill" [style]="'--pct:' + (radiusKm * 2) + '%'"
+          [attr.aria-label]="'Radio de búsqueda: ' + radiusKm + ' km'" />
+        <span class="pill-slider-value">{{ radiusKm }} km</span>
+      </div>
+    </div>
+
+    <div class="pill-sep" aria-hidden="true"></div>
+
+    <!-- Carburante -->
+    <div class="pill-section pill-section--fuel">
+      <span class="pill-label">Carburante</span>
+      <div class="chips-row chips-row--pill">
+        @for (tipo of fuelTypes; track tipo.value) {
+          <app-chip-button [active]="fuelType === tipo.value"
+            (clicked)="fuelType = tipo.value; emit()">{{ tipo.label }}</app-chip-button>
+        }
+      </div>
+    </div>
+
+    <div class="pill-sep" aria-hidden="true"></div>
+
+    <!-- Marcas — dropdown -->
+    <div class="pill-section pill-section--brands">
+      <button class="pill-brands-btn"
+        [class.pill-brands-btn--active]="selectedBrands.length > 0"
+        [class.pill-brands-btn--open]="brandsOpen"
+        [attr.aria-expanded]="brandsOpen"
+        (click)="toggleBrandsDropdown($event)">
+        <span>Marcas</span>
+        @if (selectedBrands.length > 0) {
+          <span class="pill-badge">{{ selectedBrands.length }}</span>
+        }
+        <svg class="pill-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+      @if (brandsOpen) {
+        <div class="pill-dropdown" role="dialog" aria-label="Filtro de marcas"
+          [style.top.px]="dropdownTop" [style.right.px]="dropdownRight">
+          <div class="pill-dropdown__top">
+            <div class="mode-toggle" role="group">
+              <button class="mode-btn" [class.mode-btn--active]="brandMode === 'allow'"
+                [attr.aria-pressed]="brandMode === 'allow'" (click)="setBrandMode('allow')">Solo estas</button>
+              <button class="mode-btn mode-btn--deny" [class.mode-btn--active]="brandMode === 'deny'"
+                [attr.aria-pressed]="brandMode === 'deny'" (click)="setBrandMode('deny')">Excluir</button>
+            </div>
+            @if (selectedBrands.length > 0) {
+              <button class="btn-limpiar-marcas" (click)="clearBrands()">Limpiar</button>
+            }
+          </div>
+          <div class="marcas-grid pill-dropdown__grid">
+            @for (brand of availableBrands; track brand) {
+              <button class="marca-chip" [class.marca-chip--active]="isBrandSelected(brand)"
+                [class.marca-chip--deny]="isBrandSelected(brand) && brandMode === 'deny'"
+                [attr.aria-pressed]="isBrandSelected(brand)" (click)="toggleBrand(brand)">
+                @if (isBrandSelected(brand) && brandMode === 'deny') { ✕ }{{ brand }}
+              </button>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
   </div>
-</section>
+}
