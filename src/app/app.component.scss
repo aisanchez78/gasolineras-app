@@ -17,6 +17,32 @@
   z-index: 1050; /* above Leaflet controls (max 1000) */
 }
 
+/* Light mode: header stays dark so logo and text remain legible */
+[data-theme="light"] .app-header {
+  background: rgba(22, 18, 16, 0.92);
+  border-bottom-color: rgba(255,255,255,0.08);
+
+  .app-title {
+    background-image: linear-gradient(90deg, #fff 0%, #ff9500 100%);
+  }
+
+  .app-tagline {
+    color: rgba(240, 237, 232, 0.55);
+  }
+
+  .theme-toggle {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.13);
+    color: rgba(240,237,232,0.7);
+
+    &:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(255,95,31,0.12);
+    }
+  }
+}
+
 .header-inner {
   max-width: 1400px;
   margin: 0 auto;
