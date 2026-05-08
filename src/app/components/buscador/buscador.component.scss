@@ -193,7 +193,7 @@
 
 .error-msg {
   font-size: .82rem;
-  color: #fca5a5;
+  color: var(--red-text);
   background: var(--red-bg);
   border: 1px solid rgba(239,68,68,0.2);
   padding: .6rem .9rem;
@@ -206,7 +206,7 @@
   align-items: flex-start;
   gap: .5rem;
   font-size: .8rem;
-  color: #86efac;
+  color: var(--green-text);
   background: var(--green-bg);
   border: 1px solid rgba(34,197,94,0.2);
   padding: .65rem .9rem;
@@ -214,7 +214,7 @@
   margin-top: .5rem;
   line-height: 1.4;
 
-  svg { width: 13px; height: 13px; flex-shrink: 0; margin-top: 2px; stroke: #86efac; }
+  svg { width: 13px; height: 13px; flex-shrink: 0; margin-top: 2px; stroke: var(--green-text); }
 }
 
 .buscador-card {

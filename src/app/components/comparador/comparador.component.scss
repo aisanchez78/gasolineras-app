@@ -118,3 +118,10 @@ td.sin-precio { color: var(--text-hint); }
   .comparador-panel { padding: 0 1rem 1rem; }
   .bar-hint { display: none; }
 }
+
+@media (max-width: 768px) {
+  /* Lift comparador above the mobile tab bar (≈64px) so it stays accessible */
+  .comparador {
+    bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+  }
+}
