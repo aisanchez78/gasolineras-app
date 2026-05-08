@@ -72,8 +72,8 @@ body {
   overflow-x: hidden;
 }
 
-/* Leaflet popup overrides — light mode tip */
-[data-theme="light"] .leaflet-popup-tip { background: #fff !important; }
+/* Leaflet popup overrides — tip follows popup background token */
+[data-theme="light"] .leaflet-popup-tip { background: var(--bg-3) !important; }
 
 /* gasolinapp custom popup — strip default Leaflet chrome */
 .gasolinapp-popup .leaflet-popup-content-wrapper {
