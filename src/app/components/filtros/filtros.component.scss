@@ -9,12 +9,20 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
-  padding: 1.25rem 1.75rem;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   flex: 1;
   min-height: 0;
+  overflow: hidden; /* recorta el scrollbar dentro del border-radius */
+  display: flex;
+  flex-direction: column;
+}
+
+.filtros-scroll {
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  padding: 1.25rem 1.75rem;
 
   /* Scrollbar — fino, semitransparente, acorde al tema */
   scrollbar-width: thin;
