@@ -72,6 +72,8 @@
   gap: 1.25rem;
   position: sticky;
   top: 90px;
+  max-height: calc(100vh - 90px);
+  overflow-y: auto;
 }
 
 .mapa-wrap { display: block; margin-bottom: 1.5rem; }
