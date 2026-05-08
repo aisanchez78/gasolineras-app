@@ -54,7 +54,6 @@ function crearIconoGasolinera(isOpen: boolean, selected: boolean): L.DivIcon {
       height: 420px;
       border-radius: 20px;
       overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.09);
     }
     @media (max-width: 768px) {
       :host { height: 100%; }

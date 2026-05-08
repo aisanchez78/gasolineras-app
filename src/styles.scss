@@ -91,9 +91,27 @@ body {
 [data-theme="dark"] .gasolinapp-popup .leaflet-popup-tip { background: #1a1a22; }
 
 /* ── Map tile contrast boost ────────────────────────────────────────────── */
-/* Dark tiles (CartoDB dark_all): boost brightness+contrast so roads are legible */
 [data-theme="dark"] .mapa-container .leaflet-tile-pane {
-  filter: brightness(1.18) contrast(1.12);
+  filter: invert(1) hue-rotate(190deg) saturate(1.4) brightness(4.0) contrast(1.0);
+}
+[data-theme="light"] .mapa-container .leaflet-tile-pane {
+  filter: contrast(1.15) saturate(0.82);
+}
+
+/* ── Map container border — orange halo tied to brand accent ─────────────── */
+[data-theme="dark"] .mapa-container {
+  border: 2px solid rgba(255,95,31,0.35) !important;
+  box-shadow:
+    0 0 0 1px rgba(255,95,31,0.12),
+    0 0 32px rgba(255,95,31,0.18),
+    0 8px 40px rgba(0,0,0,0.5) !important;
+}
+[data-theme="light"] .mapa-container {
+  border: 2px solid rgba(229,82,10,0.28) !important;
+  box-shadow:
+    0 0 0 1px rgba(229,82,10,0.08),
+    0 0 24px rgba(229,82,10,0.12),
+    0 4px 20px rgba(0,0,0,0.1) !important;
 }
 
 /* ── View Transitions ─────────────────────────────────────────────────────── */
