@@ -16,14 +16,11 @@
         <h2 class="resultados-titulo">{{ stations.length }} gasolineras</h2>
         <span class="resultados-subtitulo">radio {{ filters.radiusKm }} km</span>
       </div>
-
       <div class="orden-wrap">
         <span class="orden-label">Ordenar por</span>
         <div class="orden-chips">
           @for (op of opciones; track op.value) {
-            <app-chip-button
-              [active]="order === op.value"
-              (clicked)="orderChanged.emit(op.value)">
+            <app-chip-button [active]="order === op.value" (clicked)="orderChanged.emit(op.value)">
               {{ op.icon }} {{ op.label }}
             </app-chip-button>
           }
@@ -31,7 +28,23 @@
       </div>
     </div>
 
-    <div class="grid">
+    <!-- Desktop: paginado de 6 en 6 -->
+    <div class="grid grid--desktop">
+      @for (g of pagedStations; track g.id; let i = $index) {
+        <app-tarjeta-gasolinera
+          [station]="g"
+          [filters]="filters"
+          [isCheapest]="order === 'price' && i === 0 && currentPage === 1"
+          [isInComparison]="isSelected(g)"
+          [isComparisonFull]="isComparisonFull"
+          (toggleComparison)="toggleComparison.emit(g)"
+          (routeSelected)="routeSelected.emit(g)">
+        </app-tarjeta-gasolinera>
+      }
+    </div>
+
+    <!-- Móvil: todos los resultados sin paginación -->
+    <div class="grid grid--mobile">
       @for (g of stations; track g.id; let i = $index) {
         <app-tarjeta-gasolinera
           [station]="g"
@@ -44,6 +57,45 @@
         </app-tarjeta-gasolinera>
       }
     </div>
+
+    @if (totalPages > 1) {
+      <nav class="paginacion" aria-label="Paginación de resultados">
+        <!-- Prev -->
+        <button class="pag-btn pag-btn--arrow"
+          [disabled]="currentPage === 1"
+          (click)="goToPage(currentPage - 1)"
+          aria-label="Página anterior">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+
+        <!-- Páginas -->
+        @for (p of pageNumbers; track $index) {
+          @if (p === '...') {
+            <span class="pag-ellipsis" aria-hidden="true">…</span>
+          } @else {
+            <button class="pag-btn pag-btn--num"
+              [class.pag-btn--active]="p === currentPage"
+              [attr.aria-current]="p === currentPage ? 'page' : null"
+              [attr.aria-label]="'Página ' + p"
+              (click)="goToPage(p)">
+              {{ p }}
+            </button>
+          }
+        }
+
+        <!-- Next -->
+        <button class="pag-btn pag-btn--arrow"
+          [disabled]="currentPage === totalPages"
+          (click)="goToPage(currentPage + 1)"
+          aria-label="Página siguiente">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </nav>
+    }
 
   } @else {
     <div class="estado-info">

@@ -77,6 +77,10 @@
   gap: 1rem;
 }
 
+// Desktop: muestra grid paginado, oculta el grid completo
+.grid--mobile { display: none; }
+.grid--desktop { display: grid; }
+
 .estado-info {
   display: flex;
   flex-direction: column;
@@ -102,6 +106,73 @@
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+
+// ── Paginación ────────────────────────────────────────────────────────────────
+.paginacion {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .35rem;
+  margin-top: 2rem;
+  padding: 1.25rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.pag-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid var(--border-light);
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-family: 'DM Sans', sans-serif;
+  font-size: .9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .15s;
+  padding: 0 .5rem;
+
+  &:hover:not(:disabled):not(.pag-btn--active) {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(255,95,31,0.07);
+  }
+
+  &--active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 4px 14px rgba(255,95,31,0.4);
+    transform: scale(1.08);
+  }
+
+  &--arrow {
+    color: var(--text-secondary);
+
+    &:disabled {
+      opacity: .3;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.pag-ellipsis {
+  min-width: 32px;
+  text-align: center;
+  color: var(--text-hint);
+  font-size: .9rem;
+  user-select: none;
+}
+
+// Paginación solo en desktop — móvil muestra todo
+@media (max-width: 768px) {
+  .paginacion { display: none; }
+}
+
 @media (max-width: 768px) {
   .resultados-section { padding-top: 0; }
 
@@ -113,8 +184,8 @@
 
   .resultados-titulo { font-size: 1rem; }
 
-  .grid {
-    grid-template-columns: 1fr;
-    gap: 0;
-  }
+  // Móvil: oculta grid paginado y paginación, muestra grid completo
+  .grid--desktop { display: none; }
+  .grid--mobile  { display: grid; grid-template-columns: 1fr; gap: 0; }
+  .paginacion    { display: none; }
 }
