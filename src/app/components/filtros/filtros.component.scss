@@ -1,10 +1,22 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
 .filtros-card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
-  padding: 1.5rem 1.75rem;
+  padding: 1.25rem 1.75rem;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .filtros-titulo {
@@ -12,11 +24,24 @@
   font-size: 1rem;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
   letter-spacing: -.01em;
+  flex-shrink: 0;
 }
 
-.filtro-grupo { margin-bottom: 1.4rem; &:last-child { margin-bottom: 0; } }
+.filtro-grupo {
+  margin-bottom: 1.1rem;
+  flex-shrink: 0;
+
+  &:last-child {
+    margin-bottom: 0;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+}
 
 .filtro-label {
   display: block;
@@ -146,7 +171,22 @@
 }
 
 // ── Brand chips ──────────────────────────────────────────────────────────────
-.marcas-grid { display: flex; flex-wrap: wrap; gap: .4rem; }
+.marcas-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  align-content: flex-start;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-light) transparent;
+  padding-right: .25rem;
+
+  &::-webkit-scrollbar       { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 2px; }
+}
 
 .marca-chip {
   padding: .3rem .7rem;
