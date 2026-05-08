@@ -238,7 +238,7 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
       const InfoControl = L.Control.extend({
         onAdd: () => {
           const div = L.DomUtil.create('div');
-          div.style.cssText = 'background:rgba(13,13,15,.95);color:#f0ede8;padding:.6rem 1rem;border-radius:12px;font-family:sans-serif;font-size:.85rem;border:1px solid rgba(255,95,31,.4);';
+          div.style.cssText = 'background:var(--bg-2);color:var(--text-primary);padding:.6rem 1rem;border-radius:12px;font-family:sans-serif;font-size:.85rem;border:1px solid var(--accent-glow);box-shadow:var(--shadow);';
           div.innerHTML = `🚗 <strong>${km} km</strong> · ${min} min`;
           return div;
         },
