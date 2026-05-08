@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FuelType, FUEL_LABELS, ActiveFilters, BrandMode } from '../../models/gasolinera.model';
@@ -11,8 +11,10 @@ import { ChipButtonComponent } from '../shared/chip-button/chip-button.component
   templateUrl: './filtros.component.html',
   styleUrl: './filtros.component.scss'
 })
-export class FiltrosComponent implements OnInit {
+export class FiltrosComponent implements OnInit, OnChanges {
+  @Input() availableFuelTypes: FuelType[] = [];
   @Input() availableBrands: string[] = [];
+  @Input() hasData = false;
   @Output() filtersChanged = new EventEmitter<ActiveFilters>();
 
   fuelType: FuelType = 'gasolina95';
@@ -20,12 +22,20 @@ export class FiltrosComponent implements OnInit {
   selectedBrands: string[] = [];
   brandMode: BrandMode = 'allow';
 
-  readonly fuelTypes = (Object.keys(FUEL_LABELS) as FuelType[]).map(value => ({
-    value,
-    label: FUEL_LABELS[value],
-  }));
+  get fuelTypes() {
+    return this.availableFuelTypes.map(value => ({ value, label: FUEL_LABELS[value] }));
+  }
 
   ngOnInit() { this.emit(); }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['availableFuelTypes'] && this.availableFuelTypes.length) {
+      if (!this.availableFuelTypes.includes(this.fuelType)) {
+        this.fuelType = this.availableFuelTypes[0];
+        this.emit();
+      }
+    }
+  }
 
   setBrandMode(mode: BrandMode) {
     if (this.brandMode === mode) return;
