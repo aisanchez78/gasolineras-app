@@ -15,12 +15,38 @@ export class FiltrosComponent implements OnInit, OnChanges {
   @Input() availableFuelTypes: FuelType[] = [];
   @Input() availableBrands: string[] = [];
   @Input() hasData = false;
+  @Input() mode: 'sidebar' | 'pill' = 'sidebar';
   @Output() filtersChanged = new EventEmitter<ActiveFilters>();
 
   fuelType: FuelType = 'gasolina95';
   radiusKm = 10;
   selectedBrands: string[] = [];
   brandMode: BrandMode = 'allow';
+  brandsOpen = false;
+  brandsExpanded = false;
+  readonly BRANDS_PREVIEW = 8;
+
+  get visibleBrands() {
+    return this.brandsExpanded
+      ? this.availableBrands
+      : this.availableBrands.slice(0, this.BRANDS_PREVIEW);
+  }
+
+  get hiddenBrandsCount() {
+    return Math.max(0, this.availableBrands.length - this.BRANDS_PREVIEW);
+  }
+  dropdownTop = 0;
+  dropdownRight = 0;
+
+  toggleBrandsDropdown(event: MouseEvent) {
+    if (!this.brandsOpen) {
+      const btn = event.currentTarget as HTMLElement;
+      const rect = btn.getBoundingClientRect();
+      this.dropdownTop = rect.bottom + 8;
+      this.dropdownRight = window.innerWidth - rect.right;
+    }
+    this.brandsOpen = !this.brandsOpen;
+  }
 
   get fuelTypes() {
     return this.availableFuelTypes.map(value => ({ value, label: FUEL_LABELS[value] }));
