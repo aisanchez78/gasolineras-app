@@ -87,8 +87,8 @@ body {
   margin: 0;
   line-height: 1.4;
 }
-/* Dark mode popup tip color */
-[data-theme="dark"] .gasolinapp-popup .leaflet-popup-tip { background: #1a1a22; }
+/* Popup tip follows the popup background token */
+.gasolinapp-popup .leaflet-popup-tip { background: var(--bg-3) !important; }
 
 /* ── Map tile contrast boost ────────────────────────────────────────────── */
 [data-theme="dark"] .mapa-container .leaflet-tile-pane {

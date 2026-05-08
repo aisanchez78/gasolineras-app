@@ -145,34 +145,22 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
       const price    = priceRaw !== '—' ? priceRaw.replace('.', ',') : '—';
       const distance = g.distance.toFixed(1);
 
-      const dark     = this.theme === 'dark';
-      const popBg    = dark ? '#1a1a22'                : '#ffffff';
-      const popText  = dark ? '#f0ede8'                : '#1a1a1a';
-      const popSub   = dark ? 'rgba(255,255,255,.55)'  : 'rgba(0,0,0,.5)';
-      const popShadow = dark ? '0 8px 32px rgba(0,0,0,.5)' : '0 8px 32px rgba(0,0,0,.15)';
-      const btnBg    = dark ? 'rgba(255,255,255,.08)'  : 'rgba(0,0,0,.06)';
-      const btnBdr   = dark ? 'rgba(255,255,255,.15)'  : 'rgba(0,0,0,.12)';
-      const btnClr   = dark ? '#f0ede8'                : '#333';
-      const btnAccBg  = dark ? 'rgba(255,95,31,.15)'   : 'rgba(255,95,31,.1)';
-      const btnAccBdr = dark ? 'rgba(255,95,31,.4)'    : 'rgba(255,95,31,.35)';
-      const btnAccClr = dark ? '#ff9500'  : '#a35a00'; /* --accent-2-text in light */
-
       const statusHtml = g.isOpen
-        ? `<span style="color:${dark ? '#22c55e' : '#0a6e30'}">● Abierta</span>` /* --green-text */
-        : `<span style="color:${dark ? '#ef4444' : '#b91c1c'}">● Cerrada</span>`; /* --red-text */
+        ? `<span style="color:var(--green-text)">● Abierta</span>`
+        : `<span style="color:var(--red-text)">● Cerrada</span>`;
 
       const BTN = `padding:6px 14px;border-radius:20px;font-family:'DM Sans',system-ui;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;`;
 
-      const popup = `<div style="font-family:'DM Sans',system-ui;min-width:190px;font-size:13px;color:${popText};background:${popBg};margin:-13px -20px;padding:16px 18px;border-radius:14px;box-shadow:${popShadow};">
-  <strong style="font-family:'Syne',sans-serif;font-size:15px;color:${popText}">${g.name}</strong><br>
-  <small style="color:${popSub}">${g.address}, ${g.city}</small><br>
+      const popup = `<div style="font-family:'DM Sans',system-ui;min-width:190px;font-size:13px;color:var(--text-primary);background:var(--bg-3);margin:-13px -20px;padding:16px 18px;border-radius:14px;box-shadow:var(--shadow);">
+  <strong style="font-family:'Syne',sans-serif;font-size:15px;color:var(--text-primary)">${g.name}</strong><br>
+  <small style="color:var(--text-secondary)">${g.address}, ${g.city}</small><br>
   <div style="margin:7px 0 2px">${statusHtml}</div>
-  <div style="font-size:22px;font-weight:800;margin:4px 0;color:${popText}">${price} <span style="font-size:13px;font-weight:400;color:${popSub}">€/L</span></div>
-  <small style="color:${popSub}">📍 ${distance} km</small>
+  <div style="font-size:22px;font-weight:800;margin:4px 0;color:var(--text-primary)">${price} <span style="font-size:13px;font-weight:400;color:var(--text-secondary)">€/L</span></div>
+  <small style="color:var(--text-secondary)">📍 ${distance} km</small>
   <div style="display:flex;gap:6px;margin-top:12px">
-    <button data-accion="ruta" style="${BTN}background:${btnAccBg};border:1px solid ${btnAccBdr};color:${btnAccClr};">🚗 Ruta</button>
-    <button data-accion="comparar" style="${BTN}background:${btnBg};border:1px solid ${btnBdr};color:${btnClr};">+ Comparar</button>
-    <button data-accion="maps" style="${BTN}background:${btnBg};border:1px solid ${btnBdr};color:${btnClr};">Maps ↗</button>
+    <button data-accion="ruta" style="${BTN}background:var(--accent-glow);border:1px solid var(--accent-glow);color:var(--accent-2-text);">🚗 Ruta</button>
+    <button data-accion="comparar" style="${BTN}background:var(--surface-hover);border:1px solid var(--border-light);color:var(--text-primary);">+ Comparar</button>
+    <button data-accion="maps" style="${BTN}background:var(--surface-hover);border:1px solid var(--border-light);color:var(--text-primary);">Maps ↗</button>
   </div>
 </div>`;
 
