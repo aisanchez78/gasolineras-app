@@ -78,8 +78,8 @@
 }
 
 // Desktop: muestra grid paginado, oculta el grid completo
-.grid--mobile { display: none; }
-.grid--desktop { display: grid; }
+.grid--mobile  { display: none; }
+.grid--desktop { display: grid; align-items: start; }
 
 .estado-info {
   display: flex;
