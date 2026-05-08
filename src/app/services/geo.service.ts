@@ -22,7 +22,6 @@ export class GeoService {
           observer.complete();
         },
         err => {
-          console.warn('GPS falló (code ' + err.code + '), intentando por IP...');
           // Fallback automático a geolocalización por IP
           this.getLocationByIp().subscribe({
             next: coords => { observer.next(coords); observer.complete(); },
@@ -39,7 +38,6 @@ export class GeoService {
       this.http.get<any>(environment.ipApiUrl).subscribe({
         next: data => {
           if (data?.latitude && data?.longitude) {
-            console.log('Ubicación por IP:', data.city, data.latitude, data.longitude);
             observer.next({ lat: data.latitude, lng: data.longitude });
             observer.complete();
           } else {
@@ -51,7 +49,6 @@ export class GeoService {
           this.http.get<any>(environment.ipApiFallbackUrl).subscribe({
             next: data => {
               if (data?.lat && data?.lon) {
-                console.log('Ubicación por ip-api:', data.city, data.lat, data.lon);
                 observer.next({ lat: data.lat, lng: data.lon });
                 observer.complete();
               } else {
