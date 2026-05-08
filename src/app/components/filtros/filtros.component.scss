@@ -181,12 +181,42 @@
   }
 }
 
+.marcas-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  margin-top: .6rem;
+}
+
 .marcas-nota {
   font-size: .75rem;
   color: var(--green-text);
-  margin-top: .6rem;
+  margin: 0;
+  flex: 1;
 
   &--deny { color: var(--red-text); }
+}
+
+.btn-limpiar-marcas {
+  background: none;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  color: var(--text-hint);
+  font-family: 'DM Sans', sans-serif;
+  font-size: .7rem;
+  font-weight: 500;
+  padding: .2rem .6rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .15s;
+  flex-shrink: 0;
+
+  &:hover {
+    border-color: var(--red-text);
+    color: var(--red-text);
+    background: var(--red-bg);
+  }
 }
 @media (max-width: 768px) {
   .filtros-card { padding: 1rem 1.25rem; }

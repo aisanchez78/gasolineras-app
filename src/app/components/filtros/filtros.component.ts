@@ -55,6 +55,11 @@ export class FiltrosComponent implements OnInit {
     return this.brandMode === 'allow' ? `Mostrando solo: ${list}` : `Excluyendo: ${list}`;
   }
 
+  clearBrands() {
+    this.selectedBrands = [];
+    this.emit();
+  }
+
   emit() {
     this.filtersChanged.emit({
       fuelType: this.fuelType,

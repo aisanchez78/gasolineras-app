@@ -54,10 +54,15 @@
         </button>
       }
     </div>
-    @if (brandNote) {
-      <p class="marcas-nota" [class.marcas-nota--deny]="brandMode === 'deny'">
-        {{ brandNote }}
-      </p>
+    @if (selectedBrands.length > 0) {
+      <div class="marcas-footer">
+        <p class="marcas-nota" [class.marcas-nota--deny]="brandMode === 'deny'">
+          {{ brandNote }}
+        </p>
+        <button class="btn-limpiar-marcas" (click)="clearBrands()" aria-label="Eliminar filtro de marcas">
+          Limpiar
+        </button>
+      </div>
     }
   </div>
 </section>
