@@ -202,12 +202,13 @@
 
   .rotulo { font-size: .88rem; }
 
-  // Address below name
+  // Address below name — column 1 only so price in column 2 doesn't overlap
   .direccion {
-    grid-column: 1 / -1;
+    grid-column: 1;
     grid-row: 2;
     font-size: .72rem;
     margin-bottom: .5rem;
+    padding-right: .5rem;
   }
 
   // Price — large, right column, rows 1–2
