@@ -8,21 +8,32 @@ const TILE_DARK  = environment.tileUrlDark;
 const TILE_LIGHT = environment.tileUrlLight;
 const TILE_ATTR  = environment.tileAttribution;
 
-const iconUsuario = L.divIcon({
-  className: '',
-  html: `<div style="
-    width:18px;height:18px;
-    background:radial-gradient(circle,#ff5f1f 0%,#d94800 100%);
-    border:3px solid #fff;border-radius:50%;
-    box-shadow:0 0 10px rgba(255,95,31,.7);
-  "></div>`,
-  iconSize:   [18, 18],
-  iconAnchor: [9, 9],
-});
+function cssVar(name: string): string {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+function crearIconoUsuario(): L.DivIcon {
+  const accent     = cssVar('--accent');
+  const accentDark = cssVar('--accent-dark');
+  return L.divIcon({
+    className: '',
+    html: `<div style="
+      width:18px;height:18px;
+      background:radial-gradient(circle,${accent} 0%,${accentDark} 100%);
+      border:3px solid #fff;border-radius:50%;
+      box-shadow:0 0 10px ${accent}b3;
+    "></div>`,
+    iconSize:   [18, 18],
+    iconAnchor: [9, 9],
+  });
+}
 
 function crearIconoGasolinera(isOpen: boolean, selected: boolean): L.DivIcon {
-  const color  = selected ? '#ff5f1f' : (isOpen ? '#16a34a' : '#dc2626');
-  const shadow = selected ? 'rgba(255,95,31,.5)' : (isOpen ? 'rgba(34,197,94,.4)' : 'rgba(239,68,68,.35)');
+  const accent = cssVar('--accent');
+  const green  = cssVar('--green');
+  const red    = cssVar('--red');
+  const color  = selected ? accent : (isOpen ? green : red);
+  const shadow = selected ? `${accent}80` : (isOpen ? `${green}66` : `${red}59`);
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="40" viewBox="0 0 32 40">
     <path d="M16 0C16 0 16 0 16 0L16 0C16 0 2 12 2 22c0 8 6.3 14 14 14s14-6 14-14C30 12 16 0 16 0z"
@@ -130,7 +141,7 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
 
     if (!this.location) return;
 
-    this.markerUsuario = L.marker([this.location.lat, this.location.lng], { icon: iconUsuario })
+    this.markerUsuario = L.marker([this.location.lat, this.location.lng], { icon: crearIconoUsuario() })
       .addTo(this.map)
       .bindPopup('<strong>Tu ubicación</strong>');
 
