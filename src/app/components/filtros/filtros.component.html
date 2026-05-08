@@ -29,18 +29,35 @@
   </div>
 
   <div class="filtro-grupo">
-    <label class="filtro-label">Filtrar por marca (lista blanca)</label>
+    <div class="marcas-header">
+      <label class="filtro-label">Filtrar por marca</label>
+      <div class="mode-toggle" role="group" aria-label="Modo de filtro de marcas">
+        <button class="mode-btn"
+          [class.mode-btn--active]="brandMode === 'allow'"
+          [attr.aria-pressed]="brandMode === 'allow'"
+          (click)="setBrandMode('allow')">Solo estas</button>
+        <button class="mode-btn mode-btn--deny"
+          [class.mode-btn--active]="brandMode === 'deny'"
+          [attr.aria-pressed]="brandMode === 'deny'"
+          (click)="setBrandMode('deny')">Excluir</button>
+      </div>
+    </div>
     <div class="marcas-grid">
       @for (brand of availableBrands; track brand) {
-        <app-chip-button
-          [active]="isBrandSelected(brand)"
-          (clicked)="toggleBrand(brand)">
+        <button class="marca-chip"
+          [class.marca-chip--active]="isBrandSelected(brand)"
+          [class.marca-chip--deny]="isBrandSelected(brand) && brandMode === 'deny'"
+          [attr.aria-pressed]="isBrandSelected(brand)"
+          (click)="toggleBrand(brand)">
+          @if (isBrandSelected(brand) && brandMode === 'deny') { ✕ }
           {{ brand }}
-        </app-chip-button>
+        </button>
       }
     </div>
-    @if (selectedBrands.length > 0) {
-      <p class="marcas-nota">Mostrando solo: {{ selectedBrands.join(', ') }}</p>
+    @if (brandNote) {
+      <p class="marcas-nota" [class.marcas-nota--deny]="brandMode === 'deny'">
+        {{ brandNote }}
+      </p>
     }
   </div>
 </section>
