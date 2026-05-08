@@ -1,3 +1,5 @@
+:host { display: block; height: 100%; }
+
 .tarjeta {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -8,6 +10,9 @@
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 
   &::after {
     content: '';
@@ -123,6 +128,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: auto;
 }
 
 .distancia {
