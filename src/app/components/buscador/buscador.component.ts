@@ -75,7 +75,9 @@ export class BuscadorComponent implements OnInit, OnDestroy {
       const { lat, lng, locationName, timestamp } = JSON.parse(raw);
       if (Date.now() - timestamp > CACHE_TTL) { localStorage.removeItem(CACHE_KEY); return; }
       this.locationName = locationName;
-      this.locationDetected.emit({ lat, lng });
+      // Defer so all ngAfterViewInit hooks (including Leaflet init) complete before
+      // we push location data — otherwise MapaComponent discards it via !this.listo guard
+      setTimeout(() => this.locationDetected.emit({ lat, lng }), 0);
     } catch { /* localStorage no disponible o datos corruptos */ }
   }
 
