@@ -29,38 +29,77 @@
 
   <div class="separador"><span>o busca por dirección</span></div>
 
-  <!-- Búsqueda por dirección -->
+  <!-- Búsqueda por dirección con autocompletar -->
   <div class="seccion">
     <p class="seccion-label">Ciudad o dirección</p>
-    <form class="search-wrap" (ngSubmit)="searchByAddress()">
-      <input
-        class="search-input"
-        type="text"
-        [(ngModel)]="searchText"
-        name="searchText"
-        placeholder="ej. Murcia · Gran Vía Madrid · Sevilla"
-        [disabled]="loading"
-        aria-label="Ciudad o dirección" />
-      <button class="search-btn" type="submit" [disabled]="loading" aria-label="Buscar por dirección">
-        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
-          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
-      </button>
-    </form>
+    <div class="search-outer">
+      <form class="search-wrap" (ngSubmit)="searchByAddress()">
+        <input
+          class="search-input"
+          type="text"
+          [ngModel]="searchText"
+          (ngModelChange)="onSearchInput($event)"
+          name="searchText"
+          placeholder="ej. Murcia · Gran Vía Madrid · Sevilla"
+          [disabled]="loading"
+          (blur)="hideSuggestions()"
+          autocomplete="off"
+          aria-label="Ciudad o dirección"
+          aria-autocomplete="list"
+          [attr.aria-expanded]="showSuggestions" />
+        <button class="search-btn" type="submit" [disabled]="loading" aria-label="Buscar por dirección">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </button>
+      </form>
+
+      @if (showSuggestions) {
+        <ul class="suggestions-list" role="listbox" aria-label="Sugerencias de dirección">
+          @for (s of suggestions; track s.label) {
+            <li class="suggestion-item" role="option" (mousedown)="selectSuggestion(s)">
+              <svg class="suggestion-icon" viewBox="0 0 16 16" fill="none">
+                <path d="M8 1.5A4.5 4.5 0 0 1 12.5 6c0 3.5-4.5 8.5-4.5 8.5S3.5 9.5 3.5 6A4.5 4.5 0 0 1 8 1.5z"
+                  stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+                <circle cx="8" cy="6" r="1.5" stroke="currentColor" stroke-width="1.4"/>
+              </svg>
+              <span>{{ s.label }}</span>
+            </li>
+          }
+        </ul>
+      }
+    </div>
   </div>
 
   <div class="separador"><span>o usa el GPS</span></div>
 
-  <!-- GPS -->
-  <button class="btn-gps" (click)="useGps()" [disabled]="loading" aria-label="Usar mi ubicación actual">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-      <circle cx="12" cy="12" r="3"/>
-      <line x1="12" y1="2" x2="12" y2="6"/>
-      <line x1="12" y1="18" x2="12" y2="22"/>
-      <line x1="2" y1="12" x2="6" y2="12"/>
-      <line x1="18" y1="12" x2="22" y2="12"/>
-    </svg>
-    {{ loading ? 'Detectando ubicación...' : 'Usar mi ubicación actual' }}
+  <!-- GPS con estado de permiso -->
+  <button class="btn-gps"
+    [class.btn-gps--denied]="gpsPermission === 'denied'"
+    (click)="useGps()"
+    [disabled]="loading"
+    aria-label="Usar mi ubicación actual">
+    @if (gpsPermission === 'denied') {
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="1" y1="1" x2="23" y2="23"/>
+        <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/>
+        <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/>
+        <path d="M10.71 5.05A16 16 0 0 1 22.56 9"/>
+        <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/>
+        <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+        <line x1="12" y1="20" x2="12.01" y2="20"/>
+      </svg>
+      Permiso de ubicación denegado
+    } @else {
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <circle cx="12" cy="12" r="3"/>
+        <line x1="12" y1="2" x2="12" y2="6"/>
+        <line x1="12" y1="18" x2="12" y2="22"/>
+        <line x1="2" y1="12" x2="6" y2="12"/>
+        <line x1="18" y1="12" x2="22" y2="12"/>
+      </svg>
+      {{ loading ? 'Detectando ubicación...' : 'Usar mi ubicación actual' }}
+    }
   </button>
 
   @if (error) {

@@ -1,10 +1,15 @@
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { inject } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 import { Coordinates } from '../models/gasolinera.model';
-import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+
+export interface GeoSuggestion {
+  label: string;
+  lat: number;
+  lng: number;
+}
 
 @Injectable({ providedIn: 'root' })
 export class GeoService {
@@ -22,15 +27,46 @@ export class GeoService {
           observer.complete();
         },
         err => {
-          // Fallback automático a geolocalización por IP
-          this.getLocationByIp().subscribe({
-            next: coords => { observer.next(coords); observer.complete(); },
-            error: e => observer.error(e)
-          });
+          if (err.code === 1) {
+            // Permiso denegado explícitamente — propagar el error sin fallback silencioso
+            observer.error(err);
+          } else {
+            // Posición no disponible o timeout — intentar por IP
+            this.getLocationByIp().subscribe({
+              next: coords => { observer.next(coords); observer.complete(); },
+              error: e => observer.error(e),
+            });
+          }
         },
         { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 }
       );
     });
+  }
+
+  reverseGeocode(lat: number, lng: number): Observable<string> {
+    const url = `${environment.nominatimReverseUrl}?format=json&lat=${lat}&lon=${lng}&zoom=10&addressdetails=1`;
+    return this.http.get<any>(url).pipe(
+      map(r => {
+        const a = r?.address ?? {};
+        const place = a.city || a.town || a.village || a.municipality || a.county || '';
+        const region = a.state || '';
+        return place && region ? `${place}, ${region}` : place || region || r.display_name;
+      }),
+      catchError(() => of(`${lat.toFixed(4)}, ${lng.toFixed(4)}`))
+    );
+  }
+
+  searchSuggestions(query: string): Observable<GeoSuggestion[]> {
+    if (query.trim().length < 3) return of([]);
+    const url = `${environment.nominatimUrl}?format=json&q=${encodeURIComponent(query)}&countrycodes=es&limit=5&addressdetails=0`;
+    return this.http.get<any[]>(url).pipe(
+      map(results => results.map(r => ({
+        label: r.display_name,
+        lat: parseFloat(r.lat),
+        lng: parseFloat(r.lon),
+      }))),
+      catchError(() => of([]))
+    );
   }
 
   private getLocationByIp(): Observable<Coordinates> {
@@ -45,7 +81,6 @@ export class GeoService {
           }
         },
         error: () => {
-          // Segundo fallback: ip-api.com
           this.http.get<any>(environment.ipApiFallbackUrl).subscribe({
             next: data => {
               if (data?.lat && data?.lon) {
@@ -55,9 +90,9 @@ export class GeoService {
                 observer.error(new Error('No se pudo obtener ubicación'));
               }
             },
-            error: e => observer.error(e)
+            error: e => observer.error(e),
           });
-        }
+        },
       });
     });
   }
@@ -81,15 +116,9 @@ export class GeoService {
     const url = `${environment.nominatimUrl}?format=json&q=${encodeURIComponent(address)}&countrycodes=es&limit=1`;
     return this.http.get<any[]>(url).pipe(
       map(results => {
-        if (!results || results.length === 0) {
-          throw new Error('Dirección no encontrada');
-        }
+        if (!results || results.length === 0) throw new Error('Dirección no encontrada');
         const r = results[0];
-        return {
-          lat: parseFloat(r.lat),
-          lng: parseFloat(r.lon),
-          locationName: r.display_name
-        };
+        return { lat: parseFloat(r.lat), lng: parseFloat(r.lon), locationName: r.display_name };
       })
     );
   }
