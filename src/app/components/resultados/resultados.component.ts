@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TarjetaGasolineraComponent } from '../tarjeta-gasolinera/tarjeta-gasolinera.component';
 import { ChipButtonComponent } from '../shared/chip-button/chip-button.component';
@@ -12,6 +12,7 @@ import { Gasolinera, ActiveFilters, SortOrder } from '../../models/gasolinera.mo
   styleUrl: './resultados.component.scss'
 })
 export class ResultadosComponent implements OnChanges {
+  constructor(private cdr: ChangeDetectorRef) {}
   @Input() stations: Gasolinera[] = [];
   @Input() filters!: ActiveFilters;
   @Input() order: SortOrder = 'price';
@@ -34,7 +35,16 @@ export class ResultadosComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (changes['stations'] || changes['order']) {
       this.currentPage = 1;
+      document.documentElement.style.removeProperty('--results-row-h');
+      setTimeout(() => this.measureRowHeight());
     }
+  }
+
+  private measureRowHeight() {
+    const cards = document.querySelectorAll('.grid--desktop app-tarjeta-gasolinera');
+    if (!cards.length) return;
+    const max = Math.max(...Array.from(cards).map(c => (c as HTMLElement).getBoundingClientRect().height));
+    if (max > 0) document.documentElement.style.setProperty('--results-row-h', `${Math.ceil(max)}px`);
   }
 
   get totalPages(): number {
@@ -62,7 +72,20 @@ export class ResultadosComponent implements OnChanges {
 
   goToPage(page: number | '...') {
     if (page === '...' || page < 1 || page > this.totalPages) return;
-    this.currentPage = page;
+    const dir = (page as number) > this.currentPage ? 'forward' : 'back';
+    document.documentElement.dataset['pgDir'] = dir;
+
+    const update = () => {
+      this.currentPage = page as number;
+      this.cdr.detectChanges();
+    };
+
+    if ('startViewTransition' in document) {
+      (document as any).startViewTransition(update);
+    } else {
+      update();
+    }
+
     document.querySelector('.resultados-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
@@ -72,5 +95,10 @@ export class ResultadosComponent implements OnChanges {
 
   get isComparisonFull(): boolean {
     return this.comparisonSelection.length >= 3;
+  }
+
+  get ghosts(): number[] {
+    const remainder = this.pagedStations.length % this.PAGE_SIZE;
+    return remainder === 0 ? [] : Array(this.PAGE_SIZE - remainder).fill(0);
   }
 }

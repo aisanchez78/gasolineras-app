@@ -150,3 +150,17 @@ body {
 @keyframes vt-slide-in-left {
   from { transform: translateX(-32px); opacity: 0; }
 }
+
+/* 5. Desktop pagination slide */
+[data-pg-dir="forward"]::view-transition-old(results-grid) {
+  animation: vt-slide-out-left 220ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+[data-pg-dir="forward"]::view-transition-new(results-grid) {
+  animation: vt-slide-in-right 220ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+[data-pg-dir="back"]::view-transition-old(results-grid) {
+  animation: vt-slide-out-right 220ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+[data-pg-dir="back"]::view-transition-new(results-grid) {
+  animation: vt-slide-in-left 220ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
