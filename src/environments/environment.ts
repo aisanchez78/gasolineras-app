@@ -6,6 +6,7 @@ export const environment = {
   tileUrlLight: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
   tileAttribution: '© <a href="https://www.openstreetmap.org/copyright">OSM</a> © <a href="https://carto.com/">CARTO</a>',
   ipApiUrl: 'https://ipapi.co/json/',
-  ipApiFallbackUrl: 'http://ip-api.com/json',
+  ipApiFallbackUrl: 'https://ip-api.com/json',
   nominatimUrl: 'https://nominatim.openstreetmap.org/search',
+  nominatimReverseUrl: 'https://nominatim.openstreetmap.org/reverse',
 };

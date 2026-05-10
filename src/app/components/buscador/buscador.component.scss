@@ -115,6 +115,8 @@
 }
 
 
+.search-outer { position: relative; }
+
 .search-wrap { position: relative; }
 
 .search-input {
@@ -189,6 +191,62 @@
   svg { width: 15px; height: 15px; stroke: var(--accent); flex-shrink: 0; }
   &:hover:not(:disabled) { border-color: rgba(255,95,31,0.4); background: rgba(255,95,31,0.06); color: var(--text-primary); }
   &:disabled { opacity: .5; cursor: not-allowed; }
+
+  &--denied {
+    border-color: rgba(239,68,68,0.25);
+    color: var(--red-text);
+    cursor: not-allowed;
+    svg { stroke: var(--red-text); }
+    &:hover { background: rgba(239,68,68,0.06); border-color: rgba(239,68,68,0.35); color: var(--red-text); }
+  }
+}
+
+// ── Autocompletar ───────────────────────────────────────────────────────────
+
+.suggestions-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0; right: 0;
+  z-index: 100;
+  list-style: none;
+  background: var(--surface-solid);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  animation: fade-drop .12s ease both;
+}
+
+@keyframes fade-drop {
+  from { opacity: 0; transform: translateY(-4px); }
+}
+
+.suggestion-item {
+  display: flex;
+  align-items: flex-start;
+  gap: .55rem;
+  padding: .65rem .9rem;
+  font-size: .82rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background .1s, color .1s;
+  line-height: 1.35;
+
+  &:not(:last-child) { border-bottom: 1px solid var(--border); }
+
+  &:hover {
+    background: rgba(255,95,31,0.07);
+    color: var(--text-primary);
+    .suggestion-icon { stroke: var(--accent); }
+  }
+}
+
+.suggestion-icon {
+  width: 13px; height: 13px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  stroke: var(--text-hint);
+  transition: stroke .1s;
 }
 
 .error-msg {
