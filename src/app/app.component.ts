@@ -112,9 +112,13 @@ export class AppComponent implements OnInit {
   readonly filteredStations = computed(() =>
     this.svc.sortAndLimit(this.enrichedCandidates(), this.order(), this.filters().fuelType)
   );
-  readonly availableBrands = computed(() =>
-    [...new Set(this.enrichedCandidates().map(g => g.name.toUpperCase()))].sort()
-  );
+  readonly availableBrands = computed(() => {
+    const loc = this.userLocation();
+    if (!loc || !this.allStations().length) return [];
+    // Ignore active brand selection so chips never shrink when filtering
+    const pool = this.svc.filterCandidates(this.allStations(), loc, { ...this.filters(), brands: [] });
+    return [...new Set(pool.map(g => g.name.toUpperCase()))].sort();
+  });
   readonly availableFuelTypes = computed(() =>
     (Object.keys(FUEL_LABELS) as FuelType[]).filter(type =>
       this.enrichedCandidates().some(g => g.prices[type] !== '')
