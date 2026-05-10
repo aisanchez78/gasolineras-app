@@ -35,11 +35,23 @@
     border-color: rgba(255,255,255,0.13);
     color: rgba(240,237,232,0.7);
 
-    &:hover {
+    &:hover, &--open {
       border-color: var(--accent);
       color: var(--accent);
       background: rgba(255,95,31,0.12);
     }
+  }
+
+  .theme-menu {
+    // Popover stays dark even in light mode — anchored to dark header
+    --surface-solid: #1c1c24;
+    --border-light:  rgba(255,255,255,0.12);
+    --border:        rgba(255,255,255,0.07);
+    --text-primary:  #f0ede8;
+    --text-secondary:#9a9898;
+    --text-hint:     #797979;
+    --surface-hover: rgba(255,255,255,0.06);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.06);
   }
 }
 
@@ -125,8 +137,15 @@
 
 .has-comparador .app-main { padding-bottom: 5rem; }
 
-.theme-toggle {
+// ── Theme menu ────────────────────────────────────────────────────────────────
+
+.theme-menu-wrap {
+  position: relative;
   margin-left: auto;
+  flex-shrink: 0;
+}
+
+.theme-toggle {
   width: 38px; height: 38px;
   border-radius: 10px;
   border: 1px solid var(--border-light);
@@ -134,14 +153,101 @@
   color: var(--text-secondary);
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  transition: all .15s;
+  transition: border-color .15s, background .15s, color .15s;
 
-  &:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: rgba(255,95,31,0.08);
+  svg { transition: transform .5s cubic-bezier(.34,1.56,.64,1); }
+
+  &:hover        { border-color: var(--accent); color: var(--accent); background: rgba(255,95,31,0.08); }
+  &:hover svg    { transform: rotate(60deg); }
+  &--open        { border-color: var(--accent); color: var(--accent); background: rgba(255,95,31,0.1); box-shadow: 0 0 0 3px rgba(255,95,31,0.15); }
+  &--open svg    { transform: rotate(60deg); }
+}
+
+.theme-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 1060;
+  width: 210px;
+  background: var(--surface-solid);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow), 0 0 0 1px rgba(255,255,255,0.04), 0 0 32px rgba(0,0,0,0.35);
+  padding: .4rem;
+  animation: theme-menu-in .2s cubic-bezier(.34,1.56,.64,1) both;
+}
+
+@keyframes theme-menu-in {
+  from { opacity: 0; transform: translateY(-8px) scale(.95); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);   }
+}
+
+.theme-menu__title {
+  font-size: .67rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .09em;
+  color: var(--text-hint);
+  padding: .45rem .8rem .35rem;
+}
+
+.theme-menu__divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0 .5rem .35rem;
+}
+
+.theme-menu__item {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  width: 100%;
+  padding: .55rem .7rem;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-size: .88rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: background .12s, color .12s;
+
+  &:hover:not(&--active) {
+    background: var(--surface-hover);
+    color: var(--text-primary);
+
+    .item-icon { background: rgba(255,255,255,0.09); }
   }
+
+  &--active {
+    color: var(--text-primary);
+    font-weight: 600;
+
+    .item-icon {
+      background: rgba(255,95,31,0.14);
+      svg { stroke: var(--accent); }
+    }
+  }
+}
+
+.item-icon {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.05);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: background .12s;
+
+  svg { display: block; }
+}
+
+.item-label { flex: 1; }
+
+.item-check {
+  flex-shrink: 0;
+  stroke: var(--accent);
 }
 
 // ── Laptop/tablet (769–1100px): pill bar replaces sidebar filtros ─────────────
