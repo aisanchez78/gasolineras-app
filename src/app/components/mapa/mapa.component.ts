@@ -35,9 +35,6 @@ function crearIconoGasolinera(isOpen: boolean, selected: boolean, highlighted = 
   const color  = highlighted ? accent : selected ? accent : (isOpen ? green : red);
   const shadow = highlighted ? `${accent}99` : selected ? `${accent}80` : (isOpen ? `${green}66` : `${red}59`);
   const scale  = highlighted ? 'scale(1.25)' : 'scale(1)';
-  const ring   = highlighted
-    ? `<div style="position:absolute;inset:-6px;border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;border:2px solid ${accent};opacity:.6;animation:marker-ring 1.5s ease-out infinite;pointer-events:none;"></div>`
-    : '';
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="40" viewBox="0 0 32 40">
     <path d="M16 0C16 0 16 0 16 0L16 0C16 0 2 12 2 22c0 8 6.3 14 14 14s14-6 14-14C30 12 16 0 16 0z"
@@ -52,7 +49,7 @@ function crearIconoGasolinera(isOpen: boolean, selected: boolean, highlighted = 
 
   return L.divIcon({
     className: 'gas-marker',
-    html: `<div style="filter:drop-shadow(0 2px 8px ${shadow});transform:translate(-50%,-100%) ${scale};position:relative;transform-origin:bottom center;transition:transform .2s;">${ring}${svg}</div>`,
+    html: `<div style="filter:drop-shadow(0 2px 8px ${shadow});transform:translate(-50%,-100%) ${scale};position:relative;transform-origin:bottom center;transition:transform .2s;">${svg}</div>`,
     iconSize:   [0, 0],
     iconAnchor: [0, 0],
   });
@@ -98,7 +95,8 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
     }
   }
 
-  @Output() toggleComparison = new EventEmitter<Gasolinera>();
+  @Output() toggleComparison   = new EventEmitter<Gasolinera>();
+  @Output() stationHighlighted = new EventEmitter<Gasolinera>();
 
   private map: L.Map | null = null;
   private markers: L.Marker[] = [];
@@ -191,6 +189,7 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
         .bindPopup(popup, { className: 'gasolinapp-popup' });
 
       marker.on('popupopen', () => {
+        this.stationHighlighted.emit(g);
         const el = marker.getPopup()?.getElement();
         if (!el) return;
         const btnRuta     = el.querySelector<HTMLElement>('[data-accion="ruta"]');

@@ -100,6 +100,7 @@
           [theme]="theme()"
           [active]="mobileTab() === 'map'"
           (toggleComparison)="onToggleComparison($event)"
+          (stationHighlighted)="onMapStationHighlighted($event)"
           class="mapa-wrap">
         </app-mapa>
       }
