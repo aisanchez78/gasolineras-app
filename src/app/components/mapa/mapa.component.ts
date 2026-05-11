@@ -128,7 +128,10 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
       this.tileLayer?.setUrl(this.theme === 'dark' ? TILE_DARK : TILE_LIGHT);
       this.updateMarkers();
     }
-    if (changes['stations'] || changes['location'] || changes['comparisonSelection'] || changes['filters'] || changes['highlightedStation']) this.updateMarkers();
+    if (changes['stations'] || changes['location'] || changes['comparisonSelection'] || changes['filters'] || changes['highlightedStation']) {
+      const resetView = !!(changes['location'] || changes['stations'] || changes['filters']);
+      this.updateMarkers(resetView);
+    }
     if (changes['highlightedStation']) this.openHighlightedPopup();
     if (changes['routeTarget']) {
       this.activeMarkerStation = null;
@@ -140,7 +143,7 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
     this.map?.remove();
   }
 
-  private updateMarkers() {
+  private updateMarkers(resetView = true) {
     if (!this.map) return;
     this.markers.forEach(m => m.remove());
     this.markers = [];
@@ -206,10 +209,10 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
       bounds.push([lat, lng]);
     }
 
-    // Always centre on the user's location so the search origin is always visible.
-    // Zoom is derived from the active search radius so all stations fit roughly in view.
-    const zoom = this.radiusToZoom(this.filters?.radiusKm ?? 10);
-    this.map.setView([this.location.lat, this.location.lng], zoom);
+    if (resetView) {
+      const zoom = this.radiusToZoom(this.filters?.radiusKm ?? 10);
+      this.map.setView([this.location.lat, this.location.lng], zoom);
+    }
   }
 
   /** Maps a search-radius (km) to a Leaflet zoom level that shows that radius. */
