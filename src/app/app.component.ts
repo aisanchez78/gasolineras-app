@@ -151,8 +151,14 @@ export class AppComponent implements OnInit {
   onFiltersChanged(f: ActiveFilters) { this.filters.set(f); this.highlightedStation.set(null); if (this.userLocation()) this.applyFilters(); }
   onOrderChanged(o: SortOrder)       { this.order.set(o); }
   onRouteSelected(g: Gasolinera)     { this.routeTarget.update(t => t?.id === g.id ? null : g); }
-  onStationSelected(g: Gasolinera)    { this.highlightedStation.update(h => h?.id === g.id ? null : g); }
-  onMapStationHighlighted(g: Gasolinera) { this.highlightedStation.set(g); }
+  onStationSelected(g: Gasolinera) {
+    this.highlightedStation.update(h => h?.id === g.id ? null : g);
+    this.routeTarget.set(null);
+  }
+  onMapStationHighlighted(g: Gasolinera) {
+    this.highlightedStation.set(g);
+    this.routeTarget.set(null);
+  }
 
   onToggleComparison(g: Gasolinera) {
     const current = this.comparisonSelection();
