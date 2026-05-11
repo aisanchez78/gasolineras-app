@@ -25,8 +25,9 @@ export class AppComponent implements OnInit {
   readonly order               = signal<SortOrder>('price');
   readonly loading             = signal(false);
   readonly hasSearched         = signal(false);
-  readonly comparisonSelection = signal<Gasolinera[]>([]);
-  readonly routeTarget         = signal<Gasolinera | null>(null);
+  readonly comparisonSelection  = signal<Gasolinera[]>([]);
+  readonly routeTarget          = signal<Gasolinera | null>(null);
+  readonly highlightedStation   = signal<Gasolinera | null>(null);
   readonly mobileTab           = signal<'search' | 'list' | 'map'>('search');
 
   // ── Theme ─────────────────────────────────────────────────────────────────
@@ -142,13 +143,15 @@ export class AppComponent implements OnInit {
 
   onLocationDetected(pos: Coordinates) {
     this.userLocation.set(pos);
+    this.highlightedStation.set(null);
     this.search();
     if (window.innerWidth <= 768) this.setMobileTab('list');
   }
 
-  onFiltersChanged(f: ActiveFilters) { this.filters.set(f); if (this.userLocation()) this.applyFilters(); }
+  onFiltersChanged(f: ActiveFilters) { this.filters.set(f); this.highlightedStation.set(null); if (this.userLocation()) this.applyFilters(); }
   onOrderChanged(o: SortOrder)       { this.order.set(o); }
   onRouteSelected(g: Gasolinera)     { this.routeTarget.update(t => t?.id === g.id ? null : g); }
+  onStationSelected(g: Gasolinera)   { this.highlightedStation.update(h => h?.id === g.id ? null : g); }
 
   onToggleComparison(g: Gasolinera) {
     const current = this.comparisonSelection();

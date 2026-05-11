@@ -96,6 +96,7 @@
           [filters]="filters()"
           [routeTarget]="routeTarget()"
           [comparisonSelection]="comparisonSelection()"
+          [highlightedStation]="highlightedStation()"
           [theme]="theme()"
           [active]="mobileTab() === 'map'"
           (toggleComparison)="onToggleComparison($event)"
@@ -110,9 +111,11 @@
         [loading]="loading()"
         [hasSearched]="hasSearched()"
         [comparisonSelection]="comparisonSelection()"
+        [highlightedStationId]="highlightedStation()?.id ?? null"
         (orderChanged)="onOrderChanged($event)"
         (toggleComparison)="onToggleComparison($event)"
-        (routeSelected)="onRouteSelected($event)">
+        (routeSelected)="onRouteSelected($event)"
+        (stationSelected)="onStationSelected($event)">
       </app-resultados>
     </div>
   </main>

@@ -19,9 +19,11 @@ export class ResultadosComponent implements OnChanges {
   @Input() loading = false;
   @Input() hasSearched = false;
   @Input() comparisonSelection: Gasolinera[] = [];
+  @Input() highlightedStationId: string | null = null;
   @Output() orderChanged = new EventEmitter<SortOrder>();
   @Output() toggleComparison = new EventEmitter<Gasolinera>();
   @Output() routeSelected = new EventEmitter<Gasolinera>();
+  @Output() stationSelected = new EventEmitter<Gasolinera>();
 
   readonly PAGE_SIZE = 6;
   currentPage = 1;

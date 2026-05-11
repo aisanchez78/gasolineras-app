@@ -37,8 +37,10 @@
           [isCheapest]="order === 'price' && i === 0 && currentPage === 1"
           [isInComparison]="isSelected(g)"
           [isComparisonFull]="isComparisonFull"
+          [isHighlighted]="g.id === highlightedStationId"
           (toggleComparison)="toggleComparison.emit(g)"
-          (routeSelected)="routeSelected.emit(g)">
+          (routeSelected)="routeSelected.emit(g)"
+          (selected)="stationSelected.emit(g)">
         </app-tarjeta-gasolinera>
       }
       @for (_ of ghosts; track $index) {
@@ -55,8 +57,10 @@
           [isCheapest]="order === 'price' && i === 0"
           [isInComparison]="isSelected(g)"
           [isComparisonFull]="isComparisonFull"
+          [isHighlighted]="g.id === highlightedStationId"
           (toggleComparison)="toggleComparison.emit(g)"
-          (routeSelected)="routeSelected.emit(g)">
+          (routeSelected)="routeSelected.emit(g)"
+          (selected)="stationSelected.emit(g)">
         </app-tarjeta-gasolinera>
       }
     </div>

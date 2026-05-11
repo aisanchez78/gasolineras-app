@@ -28,16 +28,20 @@ function crearIconoUsuario(): L.DivIcon {
   });
 }
 
-function crearIconoGasolinera(isOpen: boolean, selected: boolean): L.DivIcon {
+function crearIconoGasolinera(isOpen: boolean, selected: boolean, highlighted = false): L.DivIcon {
   const accent = cssVar('--accent');
   const green  = cssVar('--green');
   const red    = cssVar('--red');
-  const color  = selected ? accent : (isOpen ? green : red);
-  const shadow = selected ? `${accent}80` : (isOpen ? `${green}66` : `${red}59`);
+  const color  = highlighted ? accent : selected ? accent : (isOpen ? green : red);
+  const shadow = highlighted ? `${accent}99` : selected ? `${accent}80` : (isOpen ? `${green}66` : `${red}59`);
+  const scale  = highlighted ? 'scale(1.25)' : 'scale(1)';
+  const ring   = highlighted
+    ? `<div style="position:absolute;inset:-6px;border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;border:2px solid ${accent};opacity:.6;animation:marker-ring 1.5s ease-out infinite;pointer-events:none;"></div>`
+    : '';
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="40" viewBox="0 0 32 40">
     <path d="M16 0C16 0 16 0 16 0L16 0C16 0 2 12 2 22c0 8 6.3 14 14 14s14-6 14-14C30 12 16 0 16 0z"
-      fill="${color}" stroke="white" stroke-width="2"/>
+      fill="${color}" stroke="white" stroke-width="${highlighted ? 2.5 : 2}"/>
     <g transform="translate(8,12) scale(0.7)">
       <rect x="1" y="4" width="14" height="16" rx="2" fill="none" stroke="white" stroke-width="2"/>
       <rect x="4" y="7" width="8" height="5" rx="1" fill="white" opacity=".6"/>
@@ -48,7 +52,7 @@ function crearIconoGasolinera(isOpen: boolean, selected: boolean): L.DivIcon {
 
   return L.divIcon({
     className: 'gas-marker',
-    html: `<div style="filter:drop-shadow(0 2px 6px ${shadow});transform:translate(-50%,-100%);position:relative;">${svg}</div>`,
+    html: `<div style="filter:drop-shadow(0 2px 8px ${shadow});transform:translate(-50%,-100%) ${scale};position:relative;transform-origin:bottom center;transition:transform .2s;">${ring}${svg}</div>`,
     iconSize:   [0, 0],
     iconAnchor: [0, 0],
   });
@@ -82,11 +86,15 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() filters!: ActiveFilters;
   @Input() routeTarget: Gasolinera | null = null;
   @Input() comparisonSelection: Gasolinera[] = [];
+  @Input() highlightedStation: Gasolinera | null = null;
   @Input() theme: 'dark' | 'light' = 'dark';
   /** Set to true when the map tab becomes visible — triggers invalidateSize so tiles render correctly. */
   @Input() set active(v: boolean) {
     if (v && this.map) {
-      setTimeout(() => this.map?.invalidateSize(), 80);
+      setTimeout(() => {
+        this.map?.invalidateSize();
+        this.openHighlightedPopup();
+      }, 80);
     }
   }
 
@@ -122,7 +130,8 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
       this.tileLayer?.setUrl(this.theme === 'dark' ? TILE_DARK : TILE_LIGHT);
       this.updateMarkers();
     }
-    if (changes['stations'] || changes['location'] || changes['comparisonSelection'] || changes['filters']) this.updateMarkers();
+    if (changes['stations'] || changes['location'] || changes['comparisonSelection'] || changes['filters'] || changes['highlightedStation']) this.updateMarkers();
+    if (changes['highlightedStation']) this.openHighlightedPopup();
     if (changes['routeTarget']) {
       this.activeMarkerStation = null;
       this.updateRoute();
@@ -175,8 +184,9 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
   </div>
 </div>`;
 
-      const isSel = this.comparisonSelection.some(s => s.id === g.id);
-      const marker = L.marker([lat, lng], { icon: crearIconoGasolinera(g.isOpen, isSel) })
+      const isSel  = this.comparisonSelection.some(s => s.id === g.id);
+      const isHl   = this.highlightedStation?.id === g.id;
+      const marker = L.marker([lat, lng], { icon: crearIconoGasolinera(g.isOpen, isSel, isHl) })
         .addTo(this.map!)
         .bindPopup(popup, { className: 'gasolinapp-popup' });
 
@@ -212,6 +222,14 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
     if (radiusKm <= 20) return 10;
     if (radiusKm <= 35) return 9;
     return 8;
+  }
+
+  private openHighlightedPopup() {
+    if (!this.highlightedStation || !this.listo) return;
+    const idx = this.stations.findIndex(s => s.id === this.highlightedStation!.id);
+    if (idx !== -1 && this.markers[idx]) {
+      this.markers[idx].openPopup();
+    }
   }
 
   private updateRoute() {
