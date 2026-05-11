@@ -40,6 +40,14 @@
     box-shadow: 0 0 0 1px rgba(255,95,31,0.25);
     &:hover { box-shadow: var(--shadow), 0 0 0 1px rgba(255,95,31,0.4); }
   }
+
+  &--hl {
+    border-color: rgba(255,95,31,0.6);
+    background: linear-gradient(135deg, rgba(255,95,31,0.1) 0%, var(--surface) 55%);
+    box-shadow: 0 0 0 2px rgba(255,95,31,0.3), 0 8px 24px rgba(255,95,31,0.18);
+    transform: translateY(-2px);
+    &:hover { box-shadow: 0 0 0 2px rgba(255,95,31,0.45), var(--shadow); }
+  }
 }
 
 .badge-best {

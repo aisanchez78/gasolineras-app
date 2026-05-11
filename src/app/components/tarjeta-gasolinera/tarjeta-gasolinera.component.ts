@@ -16,8 +16,10 @@ export class TarjetaGasolineraComponent {
   @Input() isCheapest = false;
   @Input() isInComparison = false;
   @Input() isComparisonFull = false;
+  @Input() isHighlighted = false;
   @Output() toggleComparison = new EventEmitter<void>();
   @Output() routeSelected = new EventEmitter<void>();
+  @Output() selected = new EventEmitter<void>();
 
   get highlightedPrice(): string {
     return this.station.prices[this.filters?.fuelType] || '—';
