@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map, switchMap, of } from 'rxjs';
+import { Observable, map, switchMap, of, catchError, throwError } from 'rxjs';
 import { GeoService } from './geo.service';
 import { OsrmService } from './osrm.service';
+import { ErrorService } from './error.service';
 import { Gasolinera, GasolineraAPI, RespuestaAPI, ActiveFilters, Coordinates, SortOrder, FuelType } from '../models/gasolinera.model';
 import { environment } from '../../environments/environment';
 
@@ -10,14 +11,21 @@ const MAX_CANDIDATOS_OSRM = 80;
 
 @Injectable({ providedIn: 'root' })
 export class GasolineraService {
-  private http = inject(HttpClient);
-  private geo  = inject(GeoService);
-  private osrm = inject(OsrmService);
+  private http     = inject(HttpClient);
+  private geo      = inject(GeoService);
+  private osrm     = inject(OsrmService);
+  private errorSvc = inject(ErrorService);
   private readonly apiUrl = environment.apiUrl;
 
   fetchAllStations(): Observable<GasolineraAPI[]> {
     return this.http.get<RespuestaAPI>(this.apiUrl).pipe(
-      map(res => res.ListaEESSPrecio ?? [])
+      map(res => res.ListaEESSPrecio ?? []),
+      catchError(err => {
+        this.errorSvc.error(
+          'No se pudieron cargar las gasolineras. El servicio de datos del Ministerio de Energía (MINETUR) no está disponible.'
+        );
+        return throwError(() => err);
+      })
     );
   }
 

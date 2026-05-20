@@ -5,6 +5,7 @@ import { FiltrosComponent } from './components/filtros/filtros.component';
 import { ResultadosComponent } from './components/resultados/resultados.component';
 import { MapaComponent } from './components/mapa/mapa.component';
 import { ComparadorComponent } from './components/comparador/comparador.component';
+import { ErrorToastComponent } from './components/shared/error-toast/error-toast.component';
 import { GasolineraService } from './services/gasolinera.service';
 import { Gasolinera, GasolineraAPI, ActiveFilters, Coordinates, SortOrder, FuelType, FUEL_LABELS } from './models/gasolinera.model';
 
@@ -13,7 +14,7 @@ export type ThemePreference = 'dark' | 'light' | 'system';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, BuscadorComponent, FiltrosComponent, ResultadosComponent, MapaComponent, ComparadorComponent],
+  imports: [CommonModule, BuscadorComponent, FiltrosComponent, ResultadosComponent, MapaComponent, ComparadorComponent, ErrorToastComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })

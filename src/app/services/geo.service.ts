@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { map, catchError, tap } from 'rxjs/operators';
 import { Coordinates } from '../models/gasolinera.model';
+import { ErrorService } from './error.service';
 import { environment } from '../../environments/environment';
 
 export interface GeoSuggestion {
@@ -13,7 +14,10 @@ export interface GeoSuggestion {
 
 @Injectable({ providedIn: 'root' })
 export class GeoService {
-  private http = inject(HttpClient);
+  private http     = inject(HttpClient);
+  private errorSvc = inject(ErrorService);
+
+  private suggestionsErrorNotified = false;
 
   obtenerPosicion(): Observable<Coordinates> {
     if (!navigator.geolocation) {
@@ -65,7 +69,16 @@ export class GeoService {
         lat: parseFloat(r.lat),
         lng: parseFloat(r.lon),
       }))),
-      catchError(() => of([]))
+      tap(() => { this.suggestionsErrorNotified = false; }),
+      catchError(() => {
+        if (!this.suggestionsErrorNotified) {
+          this.suggestionsErrorNotified = true;
+          this.errorSvc.warn(
+            'El buscador de direcciones (Nominatim) no está disponible temporalmente.'
+          );
+        }
+        return of([]);
+      })
     );
   }
 

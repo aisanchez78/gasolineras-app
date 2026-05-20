@@ -1,0 +1,7 @@
+@if (errorSvc.current(); as notification) {
+  <div class="toast" [class.toast--error]="notification.type === 'error'" [class.toast--warning]="notification.type === 'warning'" role="alert" aria-live="assertive">
+    <span class="toast__icon">{{ notification.type === 'error' ? '✕' : '⚠' }}</span>
+    <p class="toast__message">{{ notification.message }}</p>
+    <button class="toast__close" (click)="dismiss()" aria-label="Cerrar notificación">✕</button>
+  </div>
+}
