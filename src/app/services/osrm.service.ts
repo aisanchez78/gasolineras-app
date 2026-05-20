@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { map, catchError, tap } from 'rxjs/operators';
 import { Coordinates } from '../models/gasolinera.model';
+import { ErrorService } from './error.service';
 import { environment } from '../../environments/environment';
 
 export interface OsrmRoute {
@@ -13,7 +14,11 @@ export interface OsrmRoute {
 
 @Injectable({ providedIn: 'root' })
 export class OsrmService {
-  private http = inject(HttpClient);
+  private http     = inject(HttpClient);
+  private errorSvc = inject(ErrorService);
+
+  private distancesErrorNotified = false;
+  private routeErrorNotified     = false;
 
   // Returns distances in meters from origin to each destination.
   // Returns null if OSRM does not respond so the caller can use Haversine as fallback.
@@ -26,7 +31,16 @@ export class OsrmService {
       `${environment.osrmBaseUrl}/table/v1/driving/${coords}?sources=0&annotations=distance`
     ).pipe(
       map(res => res.distances[0].slice(1)),
-      catchError(() => of(null))
+      tap(() => { this.distancesErrorNotified = false; }),
+      catchError(() => {
+        if (!this.distancesErrorNotified) {
+          this.distancesErrorNotified = true;
+          this.errorSvc.warn(
+            'Las distancias mostradas son aproximadas porque OSRM (cálculo de rutas) no está disponible.'
+          );
+        }
+        return of(null);
+      })
     );
   }
 
@@ -40,7 +54,16 @@ export class OsrmService {
         distanceMeters: res.routes[0].distance,
         durationSeconds: res.routes[0].duration,
       })),
-      catchError(() => of(null))
+      tap(() => { this.routeErrorNotified = false; }),
+      catchError(() => {
+        if (!this.routeErrorNotified) {
+          this.routeErrorNotified = true;
+          this.errorSvc.warn(
+            'No se pudo calcular la ruta. OSRM (cálculo de rutas) no está disponible.'
+          );
+        }
+        return of(null);
+      })
     );
   }
 }

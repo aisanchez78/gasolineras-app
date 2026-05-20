@@ -44,9 +44,15 @@ export class BuscadorComponent implements OnInit, OnDestroy {
         debounceTime(300),
         distinctUntilChanged(),
         switchMap(q => this.geo.searchSuggestions(q)),
-      ).subscribe(s => {
-        this.suggestions     = s;
-        this.showSuggestions = s.length > 0;
+      ).subscribe({
+        next: s => {
+          this.suggestions     = s;
+          this.showSuggestions = s.length > 0;
+        },
+        error: () => {
+          this.suggestions     = [];
+          this.showSuggestions = false;
+        },
       })
     );
   }
@@ -94,7 +100,7 @@ export class BuscadorComponent implements OnInit, OnDestroy {
     this.startSearch();
     this.geo.geocodeAddress(this.postalCode + ', España').subscribe({
       next:  r => this.onSuccess(r),
-      error: () => this.onError('No se encontró ese código postal.'),
+      error: () => this.onError('No se encontró ese código postal. Comprueba que sea correcto o usa el buscador de direcciones (Nominatim).'),
     });
   }
 
@@ -103,7 +109,7 @@ export class BuscadorComponent implements OnInit, OnDestroy {
     this.startSearch();
     this.geo.geocodeAddress(this.searchText).subscribe({
       next:  r => this.onSuccess(r),
-      error: () => this.onError('No se encontró esa dirección. Intenta con otro término.'),
+      error: () => this.onError('No se encontró esa dirección (Nominatim). Intenta con otro término.'),
     });
   }
 
@@ -141,9 +147,9 @@ export class BuscadorComponent implements OnInit, OnDestroy {
       error: err => {
         switch (err?.code) {
           case 1:  this.onError('Permiso denegado. Permite el acceso a la ubicación en tu navegador.'); break;
-          case 2:  this.onError('No se pudo obtener la ubicación GPS.'); break;
+          case 2:  this.onError('No se pudo obtener la ubicación GPS ni por IP (ipapi). Prueba a buscar por dirección.'); break;
           case 3:  this.onError('Tiempo de espera agotado. Inténtalo de nuevo.'); break;
-          default: this.onError('No se pudo obtener la ubicación.');
+          default: this.onError('No se pudo obtener la ubicación. El servicio de geolocalización por IP (ipapi) tampoco está disponible.');
         }
       },
     });

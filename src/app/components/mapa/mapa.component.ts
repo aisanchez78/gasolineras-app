@@ -244,7 +244,8 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
 
     const destination: Coordinates = { lat: g.lat, lng: g.lng };
 
-    this.osrm.getRoute(this.location, destination).subscribe(route => {
+    this.osrm.getRoute(this.location, destination).subscribe({
+      next: route => {
       if (!route || !this.map) return;
 
       this.rutaLayer = L.geoJSON(route.geometry as any, {
@@ -268,6 +269,8 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
       const bounds = this.rutaLayer!.getBounds();
       const pad: [number, number] = window.innerWidth <= 768 ? [20, 20] : [40, 40];
       this.map.fitBounds(bounds, { padding: pad });
+    },
+      error: err => console.error('[MapaComponent] Error al calcular la ruta:', err),
     });
   }
 }
