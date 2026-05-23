@@ -132,7 +132,13 @@ export class MapaComponent implements AfterViewInit, OnChanges, OnDestroy {
       const resetView = !!(changes['location'] || changes['stations'] || changes['filters']);
       this.updateMarkers(resetView);
     }
-    if (changes['highlightedStation']) this.openHighlightedPopup();
+    if (changes['highlightedStation']) {
+      if (this.activeMarkerStation && this.highlightedStation?.id !== this.activeMarkerStation.id) {
+        this.activeMarkerStation = null;
+        this.updateRoute();
+      }
+      this.openHighlightedPopup();
+    }
     if (changes['routeTarget']) {
       this.activeMarkerStation = null;
       this.updateRoute();
